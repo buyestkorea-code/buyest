@@ -137,11 +137,11 @@ export async function onRequestPost({ request, env }) {
       }
 
       if (!group || !size) return null;
-
       return { group, size };
     }
 
     const groups = {};
+    const barcodeEntries = [];
     let savedBarcodeCount = 0;
     let savedGroupCount = 0;
     let skippedCount = 0;
@@ -168,11 +168,10 @@ export async function onRequestPost({ request, env }) {
       const stock = Number(String(stockRaw).replace(/[^0-9\-]/g, "")) || 0;
       const { group, size } = parsed;
 
-      await env.STOCK_KV.put(
-        "barcode:" + barcode,
-        JSON.stringify({ brand, group, size })
-      );
-      savedBarcodeCount++;
+      barcodeEntries.push({
+        key: "barcode:" + barcode,
+        value: JSON.stringify({ brand, group, size })
+      });
 
       if (!groups[group]) {
         groups[group] = { brand, sizes: {} };
@@ -180,12 +179,27 @@ export async function onRequestPost({ request, env }) {
       groups[group].sizes[size] = stock;
     }
 
-    for (const groupCode of Object.keys(groups)) {
-      await env.STOCK_KV.put(
-        "group:" + groupCode,
-        JSON.stringify(groups[groupCode])
+    // 바코드 데이터 저장
+    for (let i = 0; i < barcodeEntries.length; i += 100) {
+      const chunk = barcodeEntries.slice(i, i + 100);
+      await Promise.all(
+        chunk.map(item => env.STOCK_KV.put(item.key, item.value))
       );
-      savedGroupCount++;
+      savedBarcodeCount += chunk.length;
+    }
+
+    // 그룹 데이터 저장
+    const groupEntries = Object.keys(groups).map(groupCode => ({
+      key: "group:" + groupCode,
+      value: JSON.stringify(groups[groupCode])
+    }));
+
+    for (let i = 0; i < groupEntries.length; i += 100) {
+      const chunk = groupEntries.slice(i, i + 100);
+      await Promise.all(
+        chunk.map(item => env.STOCK_KV.put(item.key, item.value))
+      );
+      savedGroupCount += chunk.length;
     }
 
     return new Response(
