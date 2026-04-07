@@ -12,13 +12,39 @@ export async function onRequestPost({ request, env }) {
       return new Response("파일이 없습니다.", { status: 400 });
     }
 
-    const text = await file.text();
+    const buffer = await file.arrayBuffer();
+    const bytes = new Uint8Array(buffer);
+
+    function decodeBytes(bytes, encoding) {
+      return new TextDecoder(encoding).decode(bytes);
+    }
+
+    function looksKoreanHeader(text) {
+      return (
+        text.includes("분류명") &&
+        text.includes("품목명") &&
+        text.includes("바코드") &&
+        text.includes("재고량")
+      );
+    }
+
+    let text = "";
+    try {
+      text = decodeBytes(bytes, "utf-8");
+    } catch (_) {}
+
+    if (!looksKoreanHeader(text)) {
+      try {
+        text = decodeBytes(bytes, "euc-kr");
+      } catch (_) {}
+    }
+
     if (!text || !text.trim()) {
       return new Response("파일 내용이 비어 있습니다.", { status: 400 });
     }
 
     const lines = text
-      .replace(/^\uFEFF/, "") // BOM 제거
+      .replace(/^\uFEFF/, "")
       .split(/\r?\n/)
       .map(v => v.trim())
       .filter(Boolean);
@@ -27,7 +53,6 @@ export async function onRequestPost({ request, env }) {
       return new Response("CSV 줄 수가 너무 적습니다.", { status: 400 });
     }
 
-    // CSV 한 줄 파싱: 큰따옴표 안 쉼표 대응
     function parseCsvLine(line) {
       const result = [];
       let current = "";
@@ -56,7 +81,6 @@ export async function onRequestPost({ request, env }) {
       return result;
     }
 
-    // 헤더 찾기
     let headerIndex = -1;
     let headerCols = [];
 
@@ -75,7 +99,10 @@ export async function onRequestPost({ request, env }) {
     }
 
     if (headerIndex === -1) {
-      return new Response("헤더를 찾지 못했습니다. CSV 형식을 확인하세요.", { status: 400 });
+      return new Response(
+        "헤더를 찾지 못했습니다. CSV를 UTF-8 또는 EUC-KR로 저장했는지 확인하세요.",
+        { status: 400 }
+      );
     }
 
     const idxBrand = headerCols.indexOf("분류명");
@@ -93,11 +120,9 @@ export async function onRequestPost({ request, env }) {
       let size = "";
 
       if (parts.length >= 3) {
-        // 예: 부_4078604_27
         group = parts[parts.length - 2];
         size = parts[parts.length - 1];
       } else if (parts.length === 2) {
-        // 예: 4078604_27
         group = parts[0];
         size = parts[1];
       } else {
@@ -133,27 +158,18 @@ export async function onRequestPost({ request, env }) {
         continue;
       }
 
-      const stock = Number(String(stockRaw).replace(/[^0-9\-]/g, "")) || 0;
+      const stock = Number(String(stockRaw).replace(/[^0-9\\-]/g, "")) || 0;
       const { group, size } = parsed;
 
       await env.STOCK_KV.put(
         "barcode:" + barcode,
-        JSON.stringify({
-          brand,
-          group,
-          size
-        })
+        JSON.stringify({ brand, group, size })
       );
-
       savedBarcodeCount++;
 
       if (!groups[group]) {
-        groups[group] = {
-          brand,
-          sizes: {}
-        };
+        groups[group] = { brand, sizes: {} };
       }
-
       groups[group].sizes[size] = stock;
     }
 
