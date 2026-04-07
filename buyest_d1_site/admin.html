@@ -1,237 +1,310 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="ko">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>관리자 업로드</title>
   <style>
-    body { font-family: Arial, sans-serif; max-width: 760px; margin: 40px auto; padding: 0 16px; }
-    input, button { font-size: 16px; padding: 10px; }
-    button { cursor: pointer; }
-    .box { border: 1px solid #ddd; border-radius: 8px; padding: 16px; margin-top: 16px; }
-    .muted { color: #666; }
-    progress { width: 100%; height: 20px; margin-top: 12px; }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: Arial, "Malgun Gothic", sans-serif;
+      background: #f7f7f7;
+      color: #111;
+    }
+    .wrap {
+      max-width: 860px;
+      margin: 40px auto;
+      padding: 24px;
+    }
+    .card {
+      background: #fff;
+      border: 1px solid #ddd;
+      border-radius: 12px;
+      padding: 24px;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.04);
+    }
+    h1 {
+      margin: 0 0 12px;
+      font-size: 32px;
+    }
+    .desc {
+      margin: 0 0 24px;
+      color: #555;
+      line-height: 1.6;
+    }
+    .row {
+      margin-bottom: 16px;
+    }
+    input[type="password"],
+    input[type="file"] {
+      width: 100%;
+      padding: 12px;
+      font-size: 16px;
+    }
+    button {
+      padding: 12px 18px;
+      font-size: 16px;
+      border: 0;
+      border-radius: 8px;
+      background: #111;
+      color: #fff;
+      cursor: pointer;
+    }
+    button:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+    .status-box {
+      margin-top: 24px;
+      padding: 16px;
+      border: 1px solid #ddd;
+      border-radius: 10px;
+      background: #fafafa;
+    }
+    .status-title {
+      font-weight: 700;
+      margin-bottom: 10px;
+    }
+    .progress {
+      width: 100%;
+      height: 14px;
+      appearance: none;
+    }
+    .log {
+      margin-top: 12px;
+      white-space: pre-wrap;
+      word-break: break-word;
+      font-size: 14px;
+      line-height: 1.6;
+    }
+    .small {
+      color: #666;
+      font-size: 13px;
+      margin-top: 8px;
+    }
+    .ok { color: #0a7a2f; }
+    .err { color: #c62828; }
   </style>
 </head>
 <body>
-  <h2>CSV 업로드</h2>
-  <p class="muted">D1 기준 업로드. 16,000행도 여러 청크로 나눠서 업로드합니다.</p>
+  <div class="wrap">
+    <div class="card">
+      <h1>CSV 업로드</h1>
+      <p class="desc">
+        D1 기준 업로드 관리자 페이지입니다.<br>
+        큰 CSV도 여러 청크로 나눠서 업로드합니다.
+      </p>
 
-  <div>
-    <input type="password" id="pw" placeholder="비밀번호" />
-  </div>
-  <br />
-  <div>
-    <input type="file" id="file" accept=".csv,text/csv" />
-  </div>
-  <br />
-  <button id="uploadBtn" onclick="uploadCsv()">업로드</button>
+      <div class="row">
+        <label for="password">관리자 비밀번호</label>
+        <input id="password" type="password" placeholder="비밀번호 입력" />
+      </div>
 
-  <div class="box">
-    <div id="status">대기 중</div>
-    <progress id="prog" value="0" max="100"></progress>
-    <pre id="log" style="white-space: pre-wrap;"></pre>
+      <div class="row">
+        <label for="csvFile">CSV 파일 선택</label>
+        <input id="csvFile" type="file" accept=".csv,text/csv" />
+      </div>
+
+      <div class="row">
+        <button id="uploadBtn">업로드</button>
+      </div>
+
+      <div class="status-box">
+        <div class="status-title">업로드 상태</div>
+        <progress id="progressBar" class="progress" value="0" max="100"></progress>
+        <div id="log" class="log">대기 중</div>
+        <div class="small">
+          권장: UTF-8 CSV / 첫 줄은 헤더 / 너무 큰 파일도 자동 분할 업로드
+        </div>
+      </div>
+    </div>
   </div>
 
   <script>
-    const CHUNK_SIZE = 300;
+    const passwordEl = document.getElementById("password");
+    const fileEl = document.getElementById("csvFile");
+    const uploadBtn = document.getElementById("uploadBtn");
+    const progressBar = document.getElementById("progressBar");
+    const logEl = document.getElementById("log");
 
-    async function uploadCsv() {
-      const pw = document.getElementById("pw").value.trim();
-      const file = document.getElementById("file").files[0];
-      const status = document.getElementById("status");
-      const log = document.getElementById("log");
-      const btn = document.getElementById("uploadBtn");
-      const prog = document.getElementById("prog");
+    const CHUNK_SIZE = 500; // 한 번에 500행씩 전송
 
-      if (!pw) {
-        status.textContent = "비밀번호를 입력하세요.";
-        return;
-      }
-      if (!file) {
-        status.textContent = "CSV 파일을 선택하세요.";
-        return;
-      }
-
-      btn.disabled = true;
-      prog.value = 0;
-      log.textContent = "";
-      status.textContent = "파일 읽는 중...";
-
-      try {
-        const rows = await parseCsvFile(file);
-        if (!rows.length) {
-          status.textContent = "업로드할 데이터가 없습니다.";
-          return;
-        }
-
-        status.textContent = `총 ${rows.length}행 업로드 시작`;
-        let uploaded = 0;
-
-        for (let i = 0; i < rows.length; i += CHUNK_SIZE) {
-          const chunk = rows.slice(i, i + CHUNK_SIZE);
-
-          const res = await fetch("/api/upload-chunk", {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-              "x-password": pw
-            },
-            body: JSON.stringify({
-              replace: i === 0,
-              rows: chunk
-            })
-          });
-
-          const data = await res.json();
-          if (!res.ok) {
-            throw new Error(data.error || "청크 업로드 실패");
-          }
-
-          uploaded += chunk.length;
-          prog.value = Math.round((uploaded / rows.length) * 100);
-          status.textContent = `업로드 중... ${uploaded} / ${rows.length}`;
-          log.textContent = `현재 청크 저장: ${data.saved}\n마지막 메시지: ${data.message || "정상"}`;
-        }
-
-        status.textContent = `업로드 완료 (${rows.length}행)`;
-        log.textContent += "\n\n전체 업로드 완료";
-      } catch (e) {
-        status.textContent = "업로드 실패";
-        log.textContent = e?.message || String(e);
-      } finally {
-        btn.disabled = false;
-      }
+    function setLog(message, type = "") {
+      logEl.textContent = message;
+      logEl.className = "log" + (type ? " " + type : "");
     }
 
-    async function parseCsvFile(file) {
-      const buffer = await file.arrayBuffer();
-      const bytes = new Uint8Array(buffer);
+    function updateProgress(current, total) {
+      const percent = total === 0 ? 0 : Math.round((current / total) * 100);
+      progressBar.value = percent;
+    }
 
-      let text = "";
-      try {
-        text = new TextDecoder("utf-8").decode(bytes);
-      } catch (_) {}
+    function parseCsvLine(line) {
+      const result = [];
+      let current = "";
+      let inQuotes = false;
 
-      if (!looksHeader(text)) {
-        try {
-          text = new TextDecoder("euc-kr").decode(bytes);
-        } catch (_) {}
-      }
+      for (let i = 0; i < line.length; i++) {
+        const char = line[i];
+        const next = line[i + 1];
 
-      const lines = text
-        .replace(/^\uFEFF/, "")
-        .split(/\r?\n/)
-        .map(v => v.trim())
-        .filter(Boolean);
-
-      function parseCsvLine(line) {
-        const result = [];
-        let current = "";
-        let inQuotes = false;
-
-        for (let i = 0; i < line.length; i++) {
-          const ch = line[i];
-          const next = line[i + 1];
-
-          if (ch === '"') {
-            if (inQuotes && next === '"') {
-              current += '"';
-              i++;
-            } else {
-              inQuotes = !inQuotes;
-            }
-          } else if (ch === "," && !inQuotes) {
-            result.push(current.trim());
-            current = "";
+        if (char === '"') {
+          if (inQuotes && next === '"') {
+            current += '"';
+            i++;
           } else {
-            current += ch;
+            inQuotes = !inQuotes;
           }
-        }
-
-        result.push(current.trim());
-        return result;
-      }
-
-      let headerIndex = -1;
-      let headerCols = [];
-
-      for (let i = 0; i < Math.min(lines.length, 10); i++) {
-        const cols = parseCsvLine(lines[i]);
-        if (
-          cols.includes("분류명") &&
-          cols.includes("품목명") &&
-          cols.includes("바코드") &&
-          cols.includes("재고량")
-        ) {
-          headerIndex = i;
-          headerCols = cols;
-          break;
+        } else if (char === "," && !inQuotes) {
+          result.push(current);
+          current = "";
+        } else {
+          current += char;
         }
       }
 
-      if (headerIndex === -1) {
-        throw new Error("헤더를 찾지 못했습니다. CSV 형식을 확인하세요.");
+      result.push(current);
+      return result.map(v => v.trim());
+    }
+
+    function csvToObjects(csvText) {
+      const lines = csvText
+        .replace(/\r\n/g, "\n")
+        .replace(/\r/g, "\n")
+        .split("\n")
+        .filter(line => line.trim() !== "");
+
+      if (lines.length < 2) {
+        throw new Error("CSV 데이터가 부족합니다.");
       }
 
-      const idxBrand = headerCols.indexOf("분류명");
-      const idxName = headerCols.indexOf("품목명");
-      const idxBarcode = headerCols.indexOf("바코드");
-      const idxStock = headerCols.indexOf("재고량");
+      const headers = parseCsvLine(lines[0]);
+      const rows = [];
 
-      const out = [];
+      for (let i = 1; i < lines.length; i++) {
+        const values = parseCsvLine(lines[i]);
+        const row = {};
 
-      for (let i = headerIndex + 1; i < lines.length; i++) {
-        const cols = parseCsvLine(lines[i]);
-        const brand = (cols[idxBrand] || "").trim();
-        const name = (cols[idxName] || "").trim();
-        const barcode = (cols[idxBarcode] || "").trim();
-        const stockRaw = (cols[idxStock] || "").trim();
-
-        if (!barcode || !name) continue;
-
-        const parsed = parseName(name);
-        if (!parsed) continue;
-
-        out.push({
-          barcode,
-          brand,
-          group_code: parsed.group,
-          size: parsed.size,
-          stock_qty: Number(String(stockRaw).replace(/[^0-9\-]/g, "")) || 0
+        headers.forEach((header, idx) => {
+          row[header] = values[idx] ?? "";
         });
+
+        rows.push(row);
       }
 
-      return out;
+      return { headers, rows };
     }
 
-    function parseName(nameRaw) {
-      const name = String(nameRaw || "").trim();
-      if (!name) return null;
+    async function safeReadJson(res) {
+      const text = await res.text();
+      console.log("RAW RESPONSE:", text);
 
-      const parts = name.split("_").map(v => v.trim()).filter(Boolean);
-
-      if (parts.length >= 3) {
-        return {
-          group: parts[parts.length - 2],
-          size: parts[parts.length - 1]
-        };
+      if (!text) {
+        throw new Error("서버 응답이 비어 있습니다.");
       }
-      if (parts.length === 2) {
-        return {
-          group: parts[0],
-          size: parts[1]
-        };
+
+      try {
+        return JSON.parse(text);
+      } catch (e) {
+        throw new Error("서버가 JSON이 아닌 응답을 보냈습니다: " + text);
       }
-      return null;
     }
 
-    function looksHeader(text) {
-      return text.includes("분류명") &&
-             text.includes("품목명") &&
-             text.includes("바코드") &&
-             text.includes("재고량");
+    async function uploadChunk(password, headers, rows, chunkIndex, totalChunks, isFirstChunk) {
+      const res = await fetch("/api/upload", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "x-password": password
+        },
+        body: JSON.stringify({
+          headers,
+          rows,
+          chunkIndex,
+          totalChunks,
+          replaceAll: isFirstChunk
+        })
+      });
+
+      const data = await safeReadJson(res);
+
+      if (!res.ok || !data.ok) {
+        throw new Error(data.error || data.message || "업로드 실패");
+      }
+
+      return data;
     }
+
+    uploadBtn.addEventListener("click", async () => {
+      try {
+        const password = passwordEl.value.trim();
+        const file = fileEl.files[0];
+
+        if (!password) {
+          throw new Error("비밀번호를 입력하세요.");
+        }
+
+        if (!file) {
+          throw new Error("CSV 파일을 선택하세요.");
+        }
+
+        uploadBtn.disabled = true;
+        progressBar.value = 0;
+        setLog("CSV 읽는 중...");
+
+        const csvText = await file.text();
+        const { headers, rows } = csvToObjects(csvText);
+
+        if (rows.length === 0) {
+          throw new Error("업로드할 데이터 행이 없습니다.");
+        }
+
+        const totalChunks = Math.ceil(rows.length / CHUNK_SIZE);
+        setLog(`총 ${rows.length.toLocaleString()}행 / ${totalChunks}개 청크로 업로드 시작`);
+
+        let uploadedCount = 0;
+
+        for (let i = 0; i < totalChunks; i++) {
+          const start = i * CHUNK_SIZE;
+          const end = start + CHUNK_SIZE;
+          const chunkRows = rows.slice(start, end);
+
+          setLog(
+            `업로드 중... ${i + 1}/${totalChunks} 청크\n` +
+            `${start + 1} ~ ${Math.min(end, rows.length)}행 전송 중`
+          );
+
+          const result = await uploadChunk(
+            password,
+            headers,
+            chunkRows,
+            i,
+            totalChunks,
+            i === 0
+          );
+
+          uploadedCount += chunkRows.length;
+          updateProgress(i + 1, totalChunks);
+
+          setLog(
+            `업로드 진행중\n` +
+            `청크: ${i + 1}/${totalChunks}\n` +
+            `누적 업로드: ${uploadedCount.toLocaleString()}행\n` +
+            (result.message ? `서버 메시지: ${result.message}` : "")
+          );
+        }
+
+        progressBar.value = 100;
+        setLog(`업로드 완료\n총 ${rows.length.toLocaleString()}행 처리 완료`, "ok");
+
+      } catch (err) {
+        console.error(err);
+        setLog("업로드 실패\n" + err.message, "err");
+      } finally {
+        uploadBtn.disabled = false;
+      }
+    });
   </script>
 </body>
 </html>
