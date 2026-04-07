@@ -1,0 +1,29 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <title>관리자 업로드</title>
+</head>
+<body>
+  <h1>관리자 업로드</h1>
+  <input type="file" id="file">
+  <button onclick="upload()">업로드</button>
+
+<script>
+async function upload(){
+  const file = document.getElementById('file').files[0];
+  if(!file) return alert("파일 선택");
+
+  const text = await file.text();
+  const res = await fetch("/api/upload", {
+    method: "POST",
+    headers: { "Content-Type": "text/plain" },
+    body: text
+  });
+
+  const result = await res.text();
+  alert(result);
+}
+</script>
+</body>
+</html>
