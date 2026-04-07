@@ -1,1 +1,0 @@
-# BUYEST Pages D1 Minimal Setup
