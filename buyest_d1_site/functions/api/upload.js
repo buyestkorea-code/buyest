@@ -2,54 +2,61 @@ export async function onRequestPost({ request, env }) {
   try {
     const pw = request.headers.get("x-password");
     if (pw !== "1234") {
-      return json(
-        { ok: false, error: "비밀번호가 틀렸습니다." },
-        401
-      );
+      return json({ ok: false, error: "비밀번호가 틀렸습니다." }, 401);
     }
 
     if (!env.DB) {
-      return json(
-        { ok: false, error: "D1 바인딩(DB)이 연결되지 않았습니다." },
-        500
-      );
+      return json({ ok: false, error: "D1 바인딩(DB)이 연결되지 않았습니다." }, 500);
     }
 
     const contentType = request.headers.get("content-type") || "";
-    if (!contentType.includes("application/json")) {
+
+    let headers = [];
+    let rows = [];
+    let chunkIndex = 0;
+    let totalChunks = 1;
+    let replaceAll = false;
+
+    if (contentType.includes("application/json")) {
+      const body = await request.json();
+      headers = Array.isArray(body.headers) ? body.headers : [];
+      rows = Array.isArray(body.rows) ? body.rows : [];
+      chunkIndex = Number(body.chunkIndex ?? 0);
+      totalChunks = Number(body.totalChunks ?? 1);
+      replaceAll = Boolean(body.replaceAll);
+    } else if (
+      contentType.includes("multipart/form-data") ||
+      contentType.includes("application/x-www-form-urlencoded")
+    ) {
+      const form = await request.formData();
+
+      headers = safeJsonParse(form.get("headers"), []);
+      rows = safeJsonParse(form.get("rows"), []);
+      chunkIndex = Number(form.get("chunkIndex") ?? 0);
+      totalChunks = Number(form.get("totalChunks") ?? 1);
+      replaceAll = String(form.get("replaceAll") ?? "false") === "true";
+    } else {
       return json(
-        { ok: false, error: "JSON 요청만 허용됩니다." },
+        {
+          ok: false,
+          error: `지원하지 않는 Content-Type 입니다: ${contentType || "(없음)"}`
+        },
         400
       );
     }
 
-    const body = await request.json();
-    const headers = Array.isArray(body.headers) ? body.headers : [];
-    const rows = Array.isArray(body.rows) ? body.rows : [];
-    const chunkIndex = Number(body.chunkIndex ?? 0);
-    const totalChunks = Number(body.totalChunks ?? 1);
-    const replaceAll = Boolean(body.replaceAll);
-
-    if (!headers.length) {
-      return json(
-        { ok: false, error: "headers 값이 없습니다." },
-        400
-      );
+    if (!Array.isArray(headers) || headers.length === 0) {
+      return json({ ok: false, error: "headers 값이 없습니다." }, 400);
     }
 
-    if (!rows.length) {
-      return json(
-        { ok: false, error: "rows 값이 없습니다." },
-        400
-      );
+    if (!Array.isArray(rows) || rows.length === 0) {
+      return json({ ok: false, error: "rows 값이 없습니다." }, 400);
     }
 
-    // 첫 청크일 때 전체 비우기
     if (replaceAll) {
       await env.DB.prepare(`DELETE FROM stock`).run();
     }
 
-    // 필요한 컬럼명 추정
     const colProductCode = findHeader(headers, [
       "product_code", "상품코드", "품번", "model", "MODEL", "code", "CODE"
     ]);
@@ -115,15 +122,15 @@ export async function onRequestPost({ request, env }) {
       await env.DB.batch(batch);
     }
 
-    const countResult = await env.DB.prepare(
-      `SELECT COUNT(*) as cnt FROM stock`
+    const countRow = await env.DB.prepare(
+      `SELECT COUNT(*) AS cnt FROM stock`
     ).first();
 
     return json({
       ok: true,
       message: `청크 ${chunkIndex + 1}/${totalChunks} 업로드 완료`,
       inserted: batch.length,
-      totalInDb: countResult?.cnt ?? 0
+      totalInDb: countRow?.cnt ?? 0
     });
   } catch (e) {
     return json(
@@ -144,6 +151,15 @@ function json(data, status = 200) {
       "Content-Type": "application/json; charset=utf-8"
     }
   });
+}
+
+function safeJsonParse(value, fallback) {
+  try {
+    if (typeof value !== "string") return fallback;
+    return JSON.parse(value);
+  } catch {
+    return fallback;
+  }
 }
 
 function findHeader(headers, candidates) {
