@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <title>BUYEST KIDS 재고 조회</title>
+  <link rel="stylesheet" href="/style.css" />
+</head>
+<body>
+  <div class="app-shell">
+    <header class="hero">
+      <p class="eyebrow">POP-UP EVENT</p>
+      <h1>BUYEST KIDS 재고 조회</h1>
+      <p class="hero-desc">택 바코드를 스캔하거나 번호를 직접 입력해 상품별 사이즈 재고를 확인하세요.</p>
+    </header>
+
+    <main class="content">
+      <section class="card">
+        <button id="scanToggleBtn" class="btn btn-primary">카메라로 바코드 스캔</button>
+        <div id="scannerWrap" class="scanner-wrap hidden">
+          <div id="reader"></div>
+          <p class="hint">카메라 권한을 허용한 뒤, 택 바코드를 화면 중앙에 맞춰주세요.</p>
+          <button id="stopScanBtn" class="btn btn-secondary">스캔 닫기</button>
+        </div>
+
+        <div class="divider"><span>또는</span></div>
+
+        <label for="barcodeInput" class="label">바코드 번호 직접 입력</label>
+        <div class="input-row">
+          <input id="barcodeInput" type="text" inputmode="numeric" placeholder="예: 10028940" />
+          <button id="searchBtn" class="btn btn-primary">조회</button>
+        </div>
+      </section>
+
+      <section class="card">
+        <div class="status-row">
+          <span>데이터 상태</span>
+          <strong id="dataStatus">서버 데이터 로딩 중...</strong>
+        </div>
+        <div class="status-row">
+          <span>최근 조회 바코드</span>
+          <strong id="lastBarcode">-</strong>
+        </div>
+      </section>
+
+      <section id="resultCard" class="card hidden">
+        <div class="result-header">
+          <div>
+            <p id="brandText" class="brand-text"></p>
+            <h2 id="groupTitle"></h2>
+            <p id="subTitle" class="sub-title"></p>
+          </div>
+          <span class="badge">조회 완료</span>
+        </div>
+
+        <div class="notice-box">
+          <strong>안내</strong>
+          <p>현장 판매 상황에 따라 실제 재고와 차이가 있을 수 있습니다.</p>
+        </div>
+
+        <div>
+          <h3 class="section-title">사이즈별 재고</h3>
+          <div id="sizeList" class="size-list"></div>
+        </div>
+      </section>
+
+      <section id="emptyCard" class="card hidden">
+        <div class="result-header">
+          <div>
+            <p class="brand-text">조회 결과</p>
+            <h2 id="emptyTitle">등록되지 않은 바코드입니다</h2>
+            <p class="sub-title">번호를 다시 확인해 주세요.</p>
+          </div>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <script src="https://unpkg.com/html5-qrcode"></script>
+  <script src="/app.js"></script>
+</body>
+</html>
