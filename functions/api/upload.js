@@ -1,10 +1,9 @@
-export async function onRequest({ env }) {
+export async function onRequest() {
   return new Response(
     JSON.stringify(
       {
-        hasDB: !!env.DB,
-        envKeys: Object.keys(env || {}),
-        dbType: env.DB ? typeof env.DB : null
+        ok: true,
+        test: "upload route alive"
       },
       null,
       2
