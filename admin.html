@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html>
+<head><meta charset="UTF-8"><title>관리자 업로드</title></head>
+<body>
+<h2>CSV 업로드</h2>
+<input type="password" id="pw" placeholder="비밀번호"><br><br>
+<input type="file" id="file"><br><br>
+<button onclick="upload()">업로드</button>
+<pre id="log"></pre>
+<script>
+async function upload(){
+  const file = document.getElementById("file").files[0];
+  const pw = document.getElementById("pw").value;
+  const form = new FormData();
+  form.append("file", file);
+  const res = await fetch("/api/upload", {
+    method: "POST",
+    headers: { "x-password": pw },
+    body: form
+  });
+  const text = await res.text();
+  document.getElementById("log").textContent = text;
+}
+</script>
+</body>
+</html>
