@@ -1,5 +1,12 @@
 export async function onRequestPost({ request, env }) {
   try {
+    if (!env || !env.STOCK_KV) {
+      return new Response(
+        "KV 연결 안됨: Pages 프로젝트 Settings > Bindings 에서 STOCK_KV 확인",
+        { status: 500 }
+      );
+    }
+
     const pw = request.headers.get("x-password");
     if (pw !== "1234") {
       return new Response("비밀번호 틀림", { status: 401 });
@@ -158,7 +165,7 @@ export async function onRequestPost({ request, env }) {
         continue;
       }
 
-      const stock = Number(String(stockRaw).replace(/[^0-9\\-]/g, "")) || 0;
+      const stock = Number(String(stockRaw).replace(/[^0-9\-]/g, "")) || 0;
       const { group, size } = parsed;
 
       await env.STOCK_KV.put(
