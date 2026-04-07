@@ -1,16 +1,12 @@
-export async function onRequest() {
+export async function onRequest({ env }) {
   return new Response(
-    JSON.stringify(
-      {
-        ok: true,
-        test: "upload route alive"
-      },
-      null,
-      2
-    ),
+    JSON.stringify({
+      hasDB: !!env.DB,
+      envKeys: Object.keys(env || {})
+    }, null, 2),
     {
       headers: {
-        "Content-Type": "application/json; charset=utf-8"
+        "Content-Type": "application/json"
       }
     }
   );
