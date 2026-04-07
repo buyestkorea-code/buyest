@@ -1,11 +1,240 @@
 <!doctype html>
 <html lang="ko">
 <head>
-  <meta charset="UTF-8">
-  <title>BUYEST 재고 조회</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>바코드 재고 조회</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      max-width: 760px;
+      margin: 0 auto;
+      padding: 20px;
+      line-height: 1.5;
+      background: #fafafa;
+    }
+    .card {
+      background: white;
+      border: 1px solid #e5e5e5;
+      border-radius: 14px;
+      padding: 18px;
+      margin-top: 18px;
+    }
+    h1 {
+      font-size: 24px;
+      margin-bottom: 8px;
+    }
+    .row {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+    input, button {
+      padding: 12px;
+      font-size: 16px;
+      box-sizing: border-box;
+      border-radius: 10px;
+      border: 1px solid #ccc;
+    }
+    input {
+      flex: 1 1 320px;
+    }
+    button {
+      cursor: pointer;
+      background: white;
+    }
+    #reader {
+      width: 100%;
+      margin-top: 12px;
+      display: none;
+    }
+    .result-item {
+      border: 1px solid #eee;
+      border-radius: 10px;
+      padding: 12px;
+      margin-top: 10px;
+      background: #fff;
+    }
+    .label {
+      color: #666;
+      font-size: 13px;
+      margin-bottom: 3px;
+    }
+    .value {
+      font-size: 16px;
+      font-weight: 600;
+      margin-bottom: 8px;
+      word-break: break-word;
+    }
+    .ok { color: #0a7a2f; }
+    .no { color: #b42318; }
+  </style>
 </head>
 <body>
-  <h1>BUYEST 재고 조회</h1>
-  <a href="/admin.html">관리자 페이지</a>
+  <div class="card">
+    <h1>바코드 재고 조회</h1>
+    <p>바코드를 직접 입력하거나 카메라로 스캔하세요.</p>
+
+    <div class="row">
+      <input id="barcodeInput" type="text" placeholder="바코드 입력" />
+      <button id="searchBtn">조회</button>
+    </div>
+
+    <div class="row" style="margin-top:10px;">
+      <button id="startScanBtn">카메라 스캔 시작</button>
+      <button id="stopScanBtn">카메라 스캔 중지</button>
+    </div>
+
+    <div id="reader"></div>
+  </div>
+
+  <div class="card">
+    <div id="status">대기 중...</div>
+    <div id="results"></div>
+  </div>
+
+  <script src="https://unpkg.com/html5-qrcode"></script>
+  <script>
+    const barcodeInput = document.getElementById("barcodeInput");
+    const searchBtn = document.getElementById("searchBtn");
+    const startScanBtn = document.getElementById("startScanBtn");
+    const stopScanBtn = document.getElementById("stopScanBtn");
+    const statusEl = document.getElementById("status");
+    const resultsEl = document.getElementById("results");
+    const readerEl = document.getElementById("reader");
+
+    let scanner = null;
+    let scanning = false;
+
+    function escapeHtml(str) {
+      return String(str ?? "")
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#039;");
+    }
+
+    async function searchBarcode(barcode) {
+      const clean = String(barcode || "").trim().replace(/\s+/g, "");
+      if (!clean) {
+        statusEl.innerHTML = '<span class="no">바코드를 입력하세요.</span>';
+        resultsEl.innerHTML = "";
+        return;
+      }
+
+      barcodeInput.value = clean;
+      statusEl.textContent = "조회 중...";
+      resultsEl.innerHTML = "";
+
+      try {
+        const res = await fetch(`/api/search?barcode=${encodeURIComponent(clean)}`);
+        const data = await res.json();
+
+        if (!data.ok) {
+          statusEl.innerHTML = `<span class="no">${escapeHtml(data.error || "조회 실패")}</span>`;
+          return;
+        }
+
+        if (!data.found) {
+          statusEl.innerHTML = `<span class="no">조회 결과 없음</span>`;
+          resultsEl.innerHTML = `
+            <div class="result-item">
+              <div class="label">바코드</div>
+              <div class="value">${escapeHtml(clean)}</div>
+            </div>
+          `;
+          return;
+        }
+
+        statusEl.innerHTML = `<span class="ok">조회 성공</span>`;
+
+        resultsEl.innerHTML = data.items.map(item => `
+          <div class="result-item">
+            <div class="label">바코드</div>
+            <div class="value">${escapeHtml(item.barcode)}</div>
+
+            <div class="label">상품명</div>
+            <div class="value">${escapeHtml(item.name || "-")}</div>
+
+            <div class="label">옵션</div>
+            <div class="value">${escapeHtml(item.option_text || "-")}</div>
+
+            <div class="label">재고수량</div>
+            <div class="value">${escapeHtml(item.qty)}</div>
+
+            <div class="label">업데이트</div>
+            <div class="value">${escapeHtml(item.updated_at || "-")}</div>
+          </div>
+        `).join("");
+      } catch (err) {
+        statusEl.innerHTML = `<span class="no">조회 실패</span>`;
+        resultsEl.innerHTML = `
+          <div class="result-item">${escapeHtml(String(err))}</div>
+        `;
+      }
+    }
+
+    searchBtn.addEventListener("click", () => {
+      searchBarcode(barcodeInput.value);
+    });
+
+    barcodeInput.addEventListener("keydown", (e) => {
+      if (e.key === "Enter") {
+        searchBarcode(barcodeInput.value);
+      }
+    });
+
+    startScanBtn.addEventListener("click", async () => {
+      if (scanning) return;
+
+      try {
+        readerEl.style.display = "block";
+        scanner = new Html5Qrcode("reader");
+
+        const cameras = await Html5Qrcode.getCameras();
+        if (!cameras || !cameras.length) {
+          statusEl.innerHTML = `<span class="no">사용 가능한 카메라가 없습니다.</span>`;
+          return;
+        }
+
+        const backCamera =
+          cameras.find(c => /back|rear|environment/i.test(c.label)) || cameras[0];
+
+        await scanner.start(
+          backCamera.id,
+          {
+            fps: 10,
+            qrbox: { width: 250, height: 120 }
+          },
+          async (decodedText) => {
+            if (!decodedText) return;
+            barcodeInput.value = decodedText;
+            await searchBarcode(decodedText);
+          },
+          () => {}
+        );
+
+        scanning = true;
+        statusEl.innerHTML = `<span class="ok">카메라 스캔 중...</span>`;
+      } catch (err) {
+        statusEl.innerHTML = `<span class="no">카메라 시작 실패: ${escapeHtml(String(err))}</span>`;
+      }
+    });
+
+    stopScanBtn.addEventListener("click", async () => {
+      try {
+        if (scanner && scanning) {
+          await scanner.stop();
+          await scanner.clear();
+        }
+      } catch (err) {
+      } finally {
+        scanning = false;
+        readerEl.style.display = "none";
+        statusEl.textContent = "스캔 중지";
+      }
+    });
+  </script>
 </body>
 </html>
