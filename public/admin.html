@@ -1,0 +1,110 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>재고 CSV 업로드</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      max-width: 760px;
+      margin: 40px auto;
+      padding: 20px;
+      line-height: 1.5;
+      background: #fafafa;
+    }
+    .card {
+      border: 1px solid #ddd;
+      border-radius: 14px;
+      padding: 20px;
+      background: #fff;
+    }
+    input, button {
+      width: 100%;
+      padding: 12px;
+      margin-top: 10px;
+      box-sizing: border-box;
+      font-size: 16px;
+      border-radius: 10px;
+      border: 1px solid #ccc;
+    }
+    button {
+      cursor: pointer;
+      background: #fff;
+    }
+    pre {
+      white-space: pre-wrap;
+      word-break: break-word;
+      background: #f7f7f7;
+      padding: 16px;
+      border-radius: 10px;
+      margin-top: 16px;
+      overflow: auto;
+    }
+    .muted { color: #666; font-size: 14px; }
+    .link-row {
+      margin-top: 16px;
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+    a { color: #0b57d0; text-decoration: none; }
+  </style>
+</head>
+<body>
+  <div class="card">
+    <h1>재고 CSV 업로드</h1>
+    <p class="muted">업로드하면 stock 테이블 데이터를 전체 교체합니다.</p>
+
+    <input type="password" id="password" placeholder="비밀번호" value="1234" />
+    <input type="file" id="file" accept=".csv,text/csv" />
+    <button id="uploadBtn">업로드</button>
+
+    <div class="link-row">
+      <a href="/index.html" target="_blank">조회 페이지 열기</a>
+      <a href="/api/upload" target="_blank">/api/upload 확인</a>
+      <a href="/api/debug" target="_blank">/api/debug 확인</a>
+    </div>
+
+    <pre id="result">대기 중...</pre>
+  </div>
+
+  <script>
+    const uploadBtn = document.getElementById("uploadBtn");
+    const resultEl = document.getElementById("result");
+
+    uploadBtn.addEventListener("click", async () => {
+      const password = document.getElementById("password").value.trim();
+      const file = document.getElementById("file").files[0];
+
+      if (!password) {
+        resultEl.textContent = "비밀번호를 입력하세요.";
+        return;
+      }
+
+      if (!file) {
+        resultEl.textContent = "CSV 파일을 선택하세요.";
+        return;
+      }
+
+      try {
+        resultEl.textContent = "업로드 중...";
+
+        const form = new FormData();
+        form.append("password", password);
+        form.append("file", file);
+
+        const res = await fetch("/api/upload", {
+          method: "POST",
+          body: form,
+        });
+
+        const text = await res.text();
+        resultEl.textContent = text;
+      } catch (err) {
+        resultEl.textContent = "업로드 실패\n" + String(err);
+      }
+    });
+  </script>
+</body>
+</html>
