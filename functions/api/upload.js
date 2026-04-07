@@ -29,18 +29,17 @@ function toInt(v) {
 
 function detectDelimiter(text) {
   const lines = text.split(/\r\n|\n|\r/).filter(v => v.trim() !== "");
-  const first = lines[0] || "";
+  const firstFew = lines.slice(0, 5).join("\n");
   const counts = [
-    { d: ",", n: (first.match(/,/g) || []).length },
-    { d: ";", n: (first.match(/;/g) || []).length },
-    { d: "\t", n: (first.match(/\t/g) || []).length },
-    { d: "|", n: (first.match(/\|/g) || []).length },
+    { d: ",", n: (firstFew.match(/,/g) || []).length },
+    { d: ";", n: (firstFew.match(/;/g) || []).length },
+    { d: "\t", n: (firstFew.match(/\t/g) || []).length },
+    { d: "|", n: (firstFew.match(/\|/g) || []).length },
   ].sort((a, b) => b.n - a.n);
 
   return counts[0].n > 0 ? counts[0].d : ",";
 }
 
-// 따옴표/쉼표/줄바꿈 포함 CSV 대응
 function parseCSV(text) {
   const delimiter = detectDelimiter(text);
   const rows = [];
@@ -94,15 +93,31 @@ function parseCSV(text) {
     return { delimiter, headers: [], items: [] };
   }
 
-  // 첫 5행 중 컬럼 수가 가장 많은 행을 헤더로 사용
-  let headerIndex = 0;
-  let maxCols = 0;
-  for (let i = 0; i < Math.min(rows.length, 5); i++) {
-    if (rows[i].length > maxCols) {
-      maxCols = rows[i].length;
+  // 헤더 후보를 직접 찾는다.
+  // "바코드", "품목명", "재고량", "품목코드" 같은 값이 있는 행을 우선 헤더로 사용
+  const headerKeywords = [
+    "barcode", "바코드",
+    "name", "품목명", "상품명",
+    "qty", "재고량", "재고", "수량",
+    "품목코드", "상품코드", "code"
+  ].map(normalizeHeader);
+
+  let headerIndex = -1;
+  let bestScore = -1;
+
+  for (let i = 0; i < Math.min(rows.length, 10); i++) {
+    const normalized = rows[i].map(normalizeHeader);
+    let score = 0;
+    for (const cell of normalized) {
+      if (headerKeywords.includes(cell)) score++;
+    }
+    if (score > bestScore) {
+      bestScore = score;
       headerIndex = i;
     }
   }
+
+  if (headerIndex < 0) headerIndex = 0;
 
   const headers = rows[headerIndex].map(normalizeHeader);
   const items = [];
@@ -116,7 +131,7 @@ function parseCSV(text) {
     items.push(obj);
   }
 
-  return { delimiter, headers, items };
+  return { delimiter, headers, items, headerIndex };
 }
 
 function pickValue(row, keys) {
@@ -138,6 +153,7 @@ function mapRow(raw) {
     "jan",
     "code",
     "상품코드",
+    "품목코드",
     "코드",
     "model",
     "모델",
@@ -147,6 +163,7 @@ function mapRow(raw) {
   const name = pickValue(raw, [
     "name",
     "상품명",
+    "품목명",
     "품명",
     "productname",
     "itemname",
@@ -160,6 +177,7 @@ function mapRow(raw) {
     "사이즈",
     "color",
     "색상",
+    "분류명",
   ]);
 
   const qty = toInt(
@@ -167,6 +185,7 @@ function mapRow(raw) {
       "qty",
       "수량",
       "재고",
+      "재고량",
       "재고수량",
       "stock",
       "inventory",
@@ -181,6 +200,26 @@ function mapRow(raw) {
     qty,
     raw_json: JSON.stringify(raw),
   };
+}
+
+async function readUploadedFileText(file) {
+  const ab = await file.arrayBuffer();
+
+  // 1차: UTF-8
+  try {
+    const utf8 = new TextDecoder("utf-8", { fatal: true }).decode(ab);
+    return utf8;
+  } catch (_) {}
+
+  // 2차: EUC-KR/CP949 대체
+  // 브라우저/런타임에서 euc-kr 지원되는 경우 사용
+  try {
+    const euckr = new TextDecoder("euc-kr", { fatal: true }).decode(ab);
+    return euckr;
+  } catch (_) {}
+
+  // 3차: 실패 시 강제 UTF-8 fallback
+  return new TextDecoder("utf-8").decode(ab);
 }
 
 export async function onRequestGet({ env }) {
@@ -210,16 +249,12 @@ export async function onRequestPost({ request, env }) {
       return json({ ok: false, error: "파일이 없습니다." }, 400);
     }
 
-    const text = await file.text();
+    const text = await readUploadedFileText(file);
 
     if (!text || !text.trim()) {
       return json({
         ok: false,
         error: "파일 내용이 비어 있습니다.",
-        debug: {
-          filename: file.name || "",
-          size: text ? text.length : 0,
-        },
       }, 400);
     }
 
@@ -230,12 +265,9 @@ export async function onRequestPost({ request, env }) {
         ok: false,
         error: "CSV 데이터가 부족합니다.",
         debug: {
-          filename: file.name || "",
-          textLength: text.length,
-          delimiter: parsed.delimiter,
-          headerCount: parsed.headers.length,
+          headerIndex: parsed.headerIndex,
           headers: parsed.headers,
-          preview: text.slice(0, 500),
+          preview: text.slice(0, 300),
         },
       }, 400);
     }
@@ -249,11 +281,9 @@ export async function onRequestPost({ request, env }) {
         ok: false,
         error: "유효한 바코드 데이터가 없습니다.",
         debug: {
-          filename: file.name || "",
-          delimiter: parsed.delimiter,
+          headerIndex: parsed.headerIndex,
           headers: parsed.headers,
           firstRow: parsed.items[0] || null,
-          preview: text.slice(0, 500),
         },
       }, 400);
     }
@@ -291,8 +321,7 @@ export async function onRequestPost({ request, env }) {
       inserted,
       totalInDb: count?.cnt ?? inserted,
       debug: {
-        filename: file.name || "",
-        delimiter: parsed.delimiter,
+        headerIndex: parsed.headerIndex,
         headers: parsed.headers,
         firstMapped: mapped[0] || null,
       },
