@@ -1,26 +1,69 @@
 <!DOCTYPE html>
 <html>
-<head><meta charset="UTF-8"><title>관리자 업로드</title></head>
+<head>
+  <meta charset="UTF-8">
+  <title>관리자 업로드</title>
+</head>
 <body>
-<h2>CSV 업로드</h2>
-<input type="password" id="pw" placeholder="비밀번호"><br><br>
-<input type="file" id="file"><br><br>
-<button onclick="upload()">업로드</button>
-<pre id="log"></pre>
-<script>
-async function upload(){
-  const file = document.getElementById("file").files[0];
-  const pw = document.getElementById("pw").value;
-  const form = new FormData();
-  form.append("file", file);
-  const res = await fetch("/api/upload", {
-    method: "POST",
-    headers: { "x-password": pw },
-    body: form
-  });
-  const text = await res.text();
-  document.getElementById("log").textContent = text;
-}
-</script>
+  <h2>CSV 업로드</h2>
+
+  <input type="password" id="pw" placeholder="비밀번호">
+  <br><br>
+
+  <input type="file" id="file" accept=".csv,text/csv">
+  <br><br>
+
+  <button id="uploadBtn" onclick="upload()">업로드</button>
+
+  <pre id="log" style="white-space: pre-wrap; border:1px solid #ccc; padding:12px; min-height:80px;">대기 중</pre>
+
+  <script>
+    async function upload() {
+      const log = document.getElementById("log");
+      const btn = document.getElementById("uploadBtn");
+      const fileInput = document.getElementById("file");
+      const pwInput = document.getElementById("pw");
+
+      try {
+        const file = fileInput.files[0];
+        const pw = pwInput.value;
+
+        if (!pw) {
+          log.textContent = "비밀번호를 입력하세요.";
+          return;
+        }
+
+        if (!file) {
+          log.textContent = "CSV 파일을 선택하세요.";
+          return;
+        }
+
+        btn.disabled = true;
+        log.textContent = "업로드 중...";
+
+        const form = new FormData();
+        form.append("file", file);
+
+        const res = await fetch("/api/upload", {
+          method: "POST",
+          headers: {
+            "x-password": pw
+          },
+          body: form
+        });
+
+        const text = await res.text();
+
+        log.textContent =
+          "HTTP 상태: " + res.status + "\n\n" + text;
+
+      } catch (err) {
+        log.textContent =
+          "업로드 실패:\n" + (err && err.message ? err.message : String(err));
+      } finally {
+        btn.disabled = false;
+      }
+    }
+  </script>
 </body>
 </html>
