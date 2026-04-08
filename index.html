@@ -28,258 +28,212 @@
       background:linear-gradient(180deg,#fbfbfd 0%, #f4f6fb 100%);
       color:var(--text);
     }
-    .wrap{
-      max-width:760px;
-      margin:0 auto;
-      padding:18px 14px 40px;
-    }
+    .wrap{max-width:980px;margin:0 auto;padding:28px 16px 60px}
     .hero{
-      background:linear-gradient(135deg,#111827 0%,#1f2937 65%,#374151 100%);
+      border-radius:32px;
+      padding:24px 20px;
+      background:radial-gradient(circle at top left, #152b67 0%, #0d1737 55%, #081024 100%);
       color:#fff;
-      border-radius:28px;
-      padding:26px 20px 22px;
       box-shadow:var(--shadow);
+      margin-bottom:18px;
     }
-    .eyebrow{
-      display:inline-block;
-      font-size:12px;
-      letter-spacing:.08em;
-      text-transform:uppercase;
-      opacity:.8;
-      border:1px solid rgba(255,255,255,.2);
-      border-radius:999px;
-      padding:6px 10px;
-      margin-bottom:12px;
-    }
-    h1{
-      margin:0;
-      font-size:30px;
-      line-height:1.18;
-      font-weight:800;
-    }
-    .subtitle{
-      margin:10px 0 0;
-      font-size:15px;
-      line-height:1.6;
-      color:rgba(255,255,255,.84);
-    }
-    .section{
-      margin-top:14px;
-      background:var(--panel);
-      border:1px solid var(--line);
-      border-radius:var(--radius);
-      padding:18px;
-      box-shadow:var(--shadow);
-    }
-    .section h2{
-      margin:0 0 12px;
-      font-size:18px;
-      line-height:1.3;
-    }
-    .event-lines{
-      display:grid;
-      gap:10px;
-    }
-    .event-line{
-      min-height:20px;
-      border-bottom:1px dashed #c8cfdd;
-      color:#98a2b3;
-      font-size:14px;
-      padding-bottom:6px;
-    }
-    .controls{
-      display:grid;
-      gap:14px;
-    }
-    .control-card{
-      background:#fafbff;
-      border:1px solid #e9edf6;
-      border-radius:18px;
-      padding:16px;
-    }
-    .label{
-      font-size:14px;
-      font-weight:700;
-      margin-bottom:10px;
-    }
-    .muted{
-      color:var(--muted);
-      font-size:13px;
-      line-height:1.55;
-    }
-    .input-row{
-      display:flex;
-      gap:10px;
-      flex-wrap:wrap;
-      align-items:center;
-    }
-    input[type="text"]{
-      flex:1 1 240px;
-      min-width:0;
-      width:100%;
-      border:1px solid #d7dce8;
-      border-radius:16px;
-      padding:15px 16px;
-      font-size:18px;
-      font-weight:700;
-      outline:none;
-      background:#fff;
-      color:var(--text);
-    }
-    input[type="text"]:focus{
-      border-color:#94a3b8;
-      box-shadow:0 0 0 4px rgba(148,163,184,.15);
-    }
-    button{
-      border:0;
-      border-radius:16px;
-      padding:14px 16px;
-      font-size:16px;
-      font-weight:800;
-      cursor:pointer;
-      transition:transform .08s ease, opacity .2s ease;
-    }
-    button:active{ transform:translateY(1px) }
-    .btn-primary{
-      background:#111827;
-      color:#fff;
-      min-width:120px;
-    }
-    .btn-secondary{
-      background:#0f766e;
-      color:#fff;
-      width:100%;
-    }
-    .btn-light{
-      background:#eef2ff;
-      color:#1d4ed8;
-      width:100%;
-    }
-    .status{
-      margin-top:10px;
-      font-size:13px;
-      color:var(--muted);
-      min-height:18px;
-    }
-    .result-wrap{
-      display:grid;
-      gap:12px;
-    }
-    .empty{
-      border:1px dashed #d0d5dd;
-      background:#fcfcfd;
-      border-radius:18px;
-      padding:20px 16px;
-      text-align:center;
-      color:var(--muted);
-      font-size:15px;
-      line-height:1.7;
-    }
-    .result-head{
-      border-radius:20px;
-      padding:18px;
-      background:linear-gradient(180deg,#ffffff 0%, #f9fafb 100%);
-      border:1px solid var(--line);
-    }
-    .brand-badge{
-      display:inline-block;
-      font-size:12px;
-      font-weight:800;
-      color:#344054;
-      background:#f2f4f7;
-      border-radius:999px;
-      padding:7px 10px;
-      margin-bottom:12px;
-    }
-    .family{
-      font-size:26px;
-      font-weight:900;
-      line-height:1.2;
-      letter-spacing:-.02em;
-      word-break:break-word;
-    }
-    .meta{
-      margin-top:10px;
-      display:grid;
-      gap:6px;
-      font-size:14px;
-      color:#475467;
-    }
-    .hit{
-      margin-top:12px;
+    .hero-badge{
       display:inline-flex;
       align-items:center;
       gap:8px;
-      padding:10px 12px;
+      padding:10px 16px;
+      border:1px solid rgba(255,255,255,.12);
       border-radius:999px;
-      background:var(--okbg);
-      border:1px solid var(--okbd);
+      font-weight:700;
+      letter-spacing:.08em;
+      color:#c7d2fe;
+      margin-bottom:14px;
+    }
+    h1{
+      margin:0 0 12px;
+      font-size:clamp(30px, 7vw, 54px);
+      line-height:1.08;
+      letter-spacing:-.03em;
+    }
+    .hero p{
+      margin:0;
+      color:#d0d5dd;
+      line-height:1.7;
+      font-size:15px;
+      white-space:pre-line;
+    }
+    .grid{
+      display:grid;
+      grid-template-columns:repeat(2,minmax(0,1fr));
+      gap:16px;
+      margin-bottom:18px;
+    }
+    .card{
+      background:var(--panel);
+      border-radius:28px;
+      border:1px solid var(--line);
+      box-shadow:var(--shadow);
+      padding:20px;
+    }
+    .card h2{
+      margin:0 0 14px;
+      font-size:20px;
+      letter-spacing:-.02em;
+    }
+    .hint{
+      color:var(--muted);
+      font-size:14px;
+      line-height:1.6;
+    }
+    button{
+      appearance:none;border:none;cursor:pointer;
+      border-radius:18px;
+      padding:16px 22px;
+      font-size:16px;font-weight:800;
+      transition:.18s ease;
+    }
+    .btn-main{
+      width:100%;
+      background:#0b1737;
+      color:#fff;
+    }
+    .btn-main:active{transform:translateY(1px)}
+    .btn-soft{
+      background:#eef2ff;
+      color:#1f2a44;
+    }
+    .btn-row{display:flex;gap:10px;flex-wrap:wrap}
+    input[type="text"]{
+      width:100%;
+      border:1px solid var(--line);
+      border-radius:18px;
+      padding:16px 18px;
+      font-size:18px;
+      outline:none;
+      margin-bottom:12px;
+      background:#fff;
+    }
+    input[type="text"]:focus{border-color:#9cb3ff; box-shadow:0 0 0 4px rgba(59,130,246,.08)}
+    .result{
+      background:var(--panel);
+      border-radius:28px;
+      border:1px solid var(--line);
+      box-shadow:var(--shadow);
+      padding:20px;
+      min-height:220px;
+    }
+    .result h2{
+      margin:0 0 16px;
+      font-size:22px;
+      letter-spacing:-.03em;
+    }
+    .result-empty{
+      border:1px dashed #d0d5dd;
+      border-radius:22px;
+      padding:24px 18px;
+      text-align:center;
+      color:var(--muted);
+      line-height:1.7;
+    }
+    .result-head{
+      border:1px solid var(--line);
+      border-radius:22px;
+      padding:18px;
+      margin-bottom:14px;
+    }
+    .brand-badge{
+      display:inline-flex;
+      align-items:center;
+      border-radius:999px;
+      background:#f2f4f7;
+      color:#344054;
+      padding:10px 14px;
       font-size:14px;
       font-weight:800;
-      color:#067647;
+      margin-bottom:14px;
     }
-    .not-found{
-      border-radius:20px;
-      padding:22px 18px;
-      background:var(--ngbg);
-      border:1px solid var(--ngbd);
-      color:var(--danger);
-    }
-    .not-found .title{
-      font-size:26px;
+    .family{
+      font-size:clamp(34px, 8vw, 58px);
       font-weight:900;
-      line-height:1.2;
+      line-height:1;
+      letter-spacing:-.05em;
+      margin-bottom:18px;
+      color:#0b1737;
+      word-break:break-word;
+    }
+    .meta{
+      display:grid;
+      gap:8px;
+      color:#475467;
+      font-size:15px;
+      line-height:1.6;
+      margin-bottom:18px;
+    }
+    .hit{
+      display:inline-flex;
+      align-items:center;
+      border-radius:999px;
+      padding:14px 18px;
+      font-weight:900;
+      font-size:16px;
+      background:var(--okbg);
+      border:1px solid var(--okbd);
+      color:#067647;
     }
     .color-section{
       border:1px solid var(--line);
-      border-radius:18px;
-      padding:16px;
-      background:#fff;
+      border-radius:22px;
+      padding:14px;
+      margin-top:12px;
     }
     .color-title{
       display:flex;
+      align-items:center;
       justify-content:space-between;
-      gap:10px;
-      align-items:flex-end;
+      gap:12px;
       margin-bottom:12px;
-      flex-wrap:wrap;
     }
     .color-name{
       font-size:18px;
       font-weight:900;
-      line-height:1.2;
+      color:#0b1737;
       word-break:break-word;
     }
     .color-sub{
-      font-size:13px;
-      color:var(--muted);
+      color:#667085;
+      font-size:14px;
+      white-space:nowrap;
     }
     .size-grid{
       display:grid;
-      grid-template-columns:repeat(2,minmax(0,1fr));
-      gap:10px;
+      grid-template-columns:repeat(auto-fit,minmax(140px,1fr));
+      gap:12px;
     }
     .size-card{
       border:1px solid var(--line);
-      border-radius:16px;
-      padding:14px 12px;
-      background:#f9fafb;
+      border-radius:18px;
+      padding:16px;
+      background:#fafbff;
+      min-height:108px;
+      display:flex;
+      flex-direction:column;
+      align-items:flex-start;
+      justify-content:space-between;
     }
     .size-name{
-      font-size:18px;
+      font-size:20px;
       font-weight:900;
-      margin-bottom:8px;
+      color:#0b1737;
     }
     .qty{
       display:inline-flex;
       align-items:center;
       justify-content:center;
-      min-height:36px;
+      min-width:96px;
+      padding:12px 16px;
       border-radius:999px;
-      padding:0 12px;
       font-size:16px;
       font-weight:900;
-      min-width:88px;
     }
     .qty.ok{
       background:var(--okbg);
@@ -291,192 +245,179 @@
       border:1px solid var(--ngbd);
       color:var(--danger);
     }
-    .qty.mid{
-      background:#f2f4f7;
-      border:1px solid #d0d5dd;
-      color:#344054;
+    .footer-note{
+      margin-top:18px;
+      color:#667085;
+      text-align:center;
+      font-size:14px;
+      line-height:1.7;
     }
 
-    .scanner-modal{
-      position:fixed;
-      inset:0;
-      background:rgba(15,23,42,.74);
+    .modal{
+      position:fixed; inset:0;
+      background:rgba(2,6,23,.62);
       display:none;
       align-items:center;
       justify-content:center;
+      z-index:40;
+      padding:20px;
+    }
+    .modal.open{display:flex}
+    .modal-box{
+      width:min(100%, 760px);
+      background:#07122d;
+      border:1px solid rgba(255,255,255,.08);
+      border-radius:28px;
       padding:18px;
-      z-index:999;
-    }
-    .scanner-modal.open{ display:flex; }
-    .scanner-panel{
-      width:min(100%,540px);
-      background:#0b1220;
+      box-shadow:0 24px 60px rgba(2,6,23,.38);
       color:#fff;
-      border-radius:24px;
-      padding:16px;
-      box-shadow:0 22px 60px rgba(0,0,0,.35);
     }
-    .scanner-top{
+    .modal-top{
       display:flex;
+      align-items:center;
       justify-content:space-between;
       gap:12px;
-      align-items:center;
       margin-bottom:12px;
     }
-    .scanner-title{
-      font-size:18px;
+    .modal-title{
+      font-size:20px;
       font-weight:900;
-    }
-    .scanner-close{
-      background:rgba(255,255,255,.12);
-      color:#fff;
-      min-width:84px;
-      padding:10px 12px;
+      letter-spacing:-.02em;
     }
     .video-wrap{
       position:relative;
-      border-radius:18px;
-      overflow:hidden;
+      width:100%;
+      aspect-ratio: 3 / 4;
       background:#000;
-      aspect-ratio:3/4;
+      border-radius:22px;
+      overflow:hidden;
+      border:1px solid rgba(255,255,255,.08);
     }
-    video,
-    #video,
-    #video video,
-    #video canvas{
+    #scannerRegion,
+    #scannerRegion video,
+    #scannerRegion canvas{
       width:100% !important;
       height:100% !important;
-      object-fit:cover;
-      display:block;
+      object-fit:cover !important;
+      display:block !important;
       background:#000;
-      border-radius:18px;
     }
-    #video{
-      min-height:100%;
-      position:relative;
-      z-index:1;
+    #scannerRegion{
+      position:absolute;
+      inset:0;
     }
     .scan-box{
       position:absolute;
-      left:50%;
-      top:50%;
-      width:70%;
-      height:26%;
+      left:50%; top:50%;
       transform:translate(-50%,-50%);
-      border:3px solid rgba(255,255,255,.92);
-      border-radius:18px;
-      box-shadow:0 0 0 9999px rgba(0,0,0,.24);
+      width:68%;
+      aspect-ratio: 1.8 / 1;
+      border:6px solid rgba(255,255,255,.92);
+      border-radius:34px;
+      box-shadow:0 0 0 9999px rgba(0,0,0,.16);
+      pointer-events:none;
+      z-index:2;
     }
-    .scanner-note{
-      margin-top:12px;
-      font-size:13px;
-      line-height:1.55;
-      color:rgba(255,255,255,.8);
-    }
-    .footer-note{
+    .modal-note{
       margin-top:14px;
-      text-align:center;
-      color:var(--muted);
-      font-size:12px;
+      color:#e5e7eb;
+      font-size:14px;
       line-height:1.6;
     }
-    @media (min-width:620px){
-      .controls{
-        grid-template-columns:1fr 1fr;
-      }
-      .size-grid{
-        grid-template-columns:repeat(3,minmax(0,1fr));
-      }
+
+    @media (max-width: 720px){
+      .grid{grid-template-columns:1fr}
+      .hero{padding:20px 18px; border-radius:26px}
+      .card,.result{padding:18px}
+      .size-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
+      .modal-box{padding:14px}
+      .video-wrap{aspect-ratio: 3 / 5}
     }
   </style>
 </head>
 <body>
   <div class="wrap">
     <section class="hero">
-      <div class="eyebrow">BUYEST KIDS</div>
+      <div class="hero-badge">BUYEST KIDS</div>
       <h1>바이스트키즈 2026행사 페이지</h1>
-      <p class="subtitle">행사 재고를 빠르게 확인하는 모바일 조회 페이지입니다. 카메라 스캔 또는 바코드 수동조회 후, 같은 품목 그룹을 컬러별/사이즈별로 한 번에 확인할 수 있습니다.</p>
+      <p>행사 설명 1줄
+행사 설명 2줄
+행사 설명 3줄
+행사 설명 4줄
+행사 설명 5줄</p>
     </section>
 
-    <section class="section">
-      <h2>행사 설명</h2>
-      <div class="event-lines">
-        <div class="event-line">1. 행사 안내 내용을 입력하세요.</div>
-        <div class="event-line">2. 기간 / 장소 / 운영시간 등을 입력하세요.</div>
-        <div class="event-line">3. 대상 브랜드 또는 상품군을 입력하세요.</div>
-        <div class="event-line">4. 재고조회 관련 주의사항을 입력하세요.</div>
-        <div class="event-line">5. 고객 안내 문구를 입력하세요.</div>
+    <section class="grid">
+      <div class="card">
+        <h2>카메라스캔</h2>
+        <div class="btn-row">
+          <button class="btn-main" id="openScannerBtn" type="button">카메라 스캔 시작</button>
+          <button class="btn-soft" id="captureFallbackBtn" type="button">카메라 사진으로 인식</button>
+          <input id="captureInput" type="file" accept="image/*" capture="environment" hidden />
+        </div>
+        <p class="hint" id="cameraStatus">모바일 브라우저에서 카메라 권한 허용 후 사용하세요.</p>
+      </div>
+
+      <div class="card">
+        <h2>바코드수동조회</h2>
+        <input id="barcodeInput" type="text" inputmode="numeric" placeholder="숫자/문자 바코드를 그대로 입력" />
+        <button class="btn-main" id="searchBtn" type="button">조회</button>
+        <p class="hint">숫자/문자 바코드를 그대로 입력한 뒤 조회하세요.</p>
       </div>
     </section>
 
-    <section class="section">
-      <div class="controls">
-        <div class="control-card">
-          <div class="label">카메라스캔</div>
-          <button class="btn-secondary" id="openScannerBtn">카메라로 바코드 스캔</button>
-          <div class="status" id="cameraStatus">모바일 브라우저에서 카메라 권한 허용 후 사용하세요.</div>
-        </div>
-
-        <div class="control-card">
-          <div class="label">바코드수동조회</div>
-          <div class="input-row">
-            <input id="barcodeInput" type="text" inputmode="numeric" autocomplete="off" placeholder="바코드 번호 입력" />
-            <button class="btn-primary" id="searchBtn">조회</button>
-          </div>
-          <div class="status">숫자/문자 바코드를 그대로 입력한 뒤 조회하세요.</div>
-        </div>
-      </div>
-    </section>
-
-    <section class="section">
+    <section class="result">
       <h2>조회 결과</h2>
-      <div id="resultArea" class="result-wrap">
-        <div class="empty">아직 조회한 결과가 없습니다.<br>카메라스캔 또는 바코드수동조회를 사용해 주세요.</div>
+      <div id="resultArea" class="result-empty">
+        바코드를 입력하거나 카메라로 스캔하면<br />
+        같은 품목 그룹을 컬러/사이즈별로 묶어 보여드립니다.
       </div>
+      <div class="footer-note">디자인 문구는 index.html에서 자유롭게 수정할 수 있고, 재고 데이터는 data.js만 교체하면 됩니다.</div>
     </section>
-
-    <div class="footer-note">
-      디자인 문구는 index.html에서 자유롭게 수정할 수 있고, 재고 데이터는 data.js만 교체하면 됩니다.
-    </div>
   </div>
 
-  <div class="scanner-modal" id="scannerModal" aria-hidden="true">
-    <div class="scanner-panel">
-      <div class="scanner-top">
-        <div class="scanner-title">카메라스캔</div>
-        <button class="scanner-close" id="closeScannerBtn">닫기</button>
+  <div class="modal" id="scannerModal" aria-hidden="true">
+    <div class="modal-box">
+      <div class="modal-top">
+        <div class="modal-title">카메라스캔</div>
+        <button class="btn-soft" id="closeScannerBtn" type="button">닫기</button>
       </div>
       <div class="video-wrap">
-        <div id="video"></div>
+        <div id="scannerRegion"></div>
         <div class="scan-box" aria-hidden="true"></div>
       </div>
-      <div class="scanner-note" id="scannerNote">바코드를 화면 중앙에 맞춰 주세요.</div>
+      <div class="modal-note" id="scannerNote">바코드를 화면 중앙에 맞춰 주세요.</div>
     </div>
   </div>
 
   <script src="./data.js"></script>
-  <script src="https://unpkg.com/html5-qrcode" defer></script>
+  <script src="https://cdn.jsdelivr.net/npm/@zxing/browser@0.1.5/umd/zxing-browser.min.js"></script>
   <script>
-    const PREFIX_RE = /^(부_|행_|백_|본_)/;
+    const PREFIX_RE = /^(부|행|백|본)_/;
     const resultArea = document.getElementById('resultArea');
     const barcodeInput = document.getElementById('barcodeInput');
     const searchBtn = document.getElementById('searchBtn');
     const openScannerBtn = document.getElementById('openScannerBtn');
-    const closeScannerBtn = document.getElementById('closeScannerBtn');
+    const captureFallbackBtn = document.getElementById('captureFallbackBtn');
+    const captureInput = document.getElementById('captureInput');
     const cameraStatus = document.getElementById('cameraStatus');
     const scannerModal = document.getElementById('scannerModal');
+    const closeScannerBtn = document.getElementById('closeScannerBtn');
     const scannerNote = document.getElementById('scannerNote');
-    const video = document.getElementById('video');
+    const scannerRegion = document.getElementById('scannerRegion');
 
-    let stream = null;
-    let detector = null;
-    let scanRaf = null;
+    let codeReader = null;
+    let videoControls = null;
     let scanning = false;
-    let html5Qr = null;
-    let scannerActive = false;
 
     function normalizeBarcode(value) {
-      return String(value || '').trim();
+      return String(value ?? '').trim().replace(/\.0$/, '');
+    }
+
+    function escapeHtml(value) {
+      return String(value ?? '').replace(/[&<>"']/g, (m) => ({
+        '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'
+      }[m]));
     }
 
     function parseItem(rawItem) {
@@ -567,29 +508,12 @@
 
     function qtyBadge(qty) {
       if (qty > 0) return `<div class="qty ok">재고 ${qty}</div>`;
-      if (qty === 0) return `<div class="qty no">품절</div>`;
-      return `<div class="qty mid">확인필요</div>`;
+      return `<div class="qty no">품절</div>`;
     }
 
     function renderNotFound(barcode) {
-      resultArea.innerHTML = `
-        <div class="not-found">
-          <div class="title">등록되지 않은 바코드</div>
-          <div style="margin-top:10px;font-size:15px;line-height:1.65;">
-            입력한 바코드 <strong>${escapeHtml(barcode)}</strong> 는 현재 데이터에서 찾지 못했습니다.<br>
-            숫자를 다시 확인하거나 다른 바코드를 조회해 주세요.
-          </div>
-        </div>
-      `;
-    }
-
-    function escapeHtml(str) {
-      return String(str || '')
-        .replaceAll('&', '&amp;')
-        .replaceAll('<', '&lt;')
-        .replaceAll('>', '&gt;')
-        .replaceAll('"', '&quot;')
-        .replaceAll("'", '&#39;');
+      resultArea.className = 'result-empty';
+      resultArea.innerHTML = `입력한 바코드 <strong>${escapeHtml(barcode)}</strong> 에 해당하는 재고를 찾지 못했습니다.`;
     }
 
     function renderResult(barcode) {
@@ -602,10 +526,12 @@
       const familyRows = familyMap.get(hit.family) || [hit];
       const colorGroups = buildColorGroups(familyRows);
       const totalQty = familyRows.reduce((sum, r) => sum + (Number(r.qty) || 0), 0);
+      const brandLabel = hit.brand || familyRows.find(r => r.brand)?.brand || '브랜드';
 
+      resultArea.className = '';
       resultArea.innerHTML = `
         <div class="result-head">
-          <div class="brand-badge">${escapeHtml(hit.brand || '브랜드')}</div>
+          <div class="brand-badge">${escapeHtml(brandLabel)}</div>
           <div class="family">${escapeHtml(hit.family || hit.group || hit.normalized)}</div>
           <div class="meta">
             <div>조회 바코드: <strong>${escapeHtml(hit.barcode)}</strong></div>
@@ -633,131 +559,133 @@
       `;
     }
 
-    function runSearch() {
-      const barcode = normalizeBarcode(barcodeInput.value);
-      if (!barcode) {
+    function triggerSearch() {
+      const value = normalizeBarcode(barcodeInput.value);
+      if (!value) {
         barcodeInput.focus();
         return;
       }
-      renderResult(barcode);
+      renderResult(value);
     }
 
-    searchBtn.addEventListener('click', runSearch);
+    searchBtn.addEventListener('click', triggerSearch);
     barcodeInput.addEventListener('keydown', (e) => {
-      if (e.key === 'Enter') runSearch();
+      if (e.key === 'Enter') triggerSearch();
     });
 
-    async function startScanner() {
+    async function stopScanner() {
+      scanning = false;
+      if (videoControls && typeof videoControls.stop === 'function') {
+        try { await videoControls.stop(); } catch (e) {}
+      }
+      videoControls = null;
+      codeReader = null;
+      scannerRegion.innerHTML = '';
+      scannerModal.classList.remove('open');
+      scannerModal.setAttribute('aria-hidden', 'true');
+    }
+
+    async function startLiveScanner() {
       scannerModal.classList.add('open');
       scannerModal.setAttribute('aria-hidden', 'false');
       scannerNote.textContent = '바코드를 화면 중앙에 맞춰 주세요.';
       cameraStatus.textContent = '카메라 준비 중...';
 
       if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
-        cameraStatus.textContent = '이 브라우저에서는 카메라를 사용할 수 없습니다.';
-        alert('현재 브라우저에서는 카메라를 사용할 수 없습니다. 바코드수동조회를 사용해 주세요.');
-        stopScanner();
+        alert('이 브라우저에서는 카메라를 사용할 수 없습니다. 바코드수동조회를 사용해 주세요.');
+        await stopScanner();
+        return;
+      }
+
+      if (!window.ZXingBrowser || !window.ZXingBrowser.BrowserMultiFormatReader) {
+        alert('스캐너 라이브러리를 불러오지 못했습니다. 인터넷 연결을 확인해 주세요.');
+        await stopScanner();
         return;
       }
 
       try {
-        await navigator.mediaDevices.getUserMedia({ video: true, audio: false })
-          .then((tmpStream) => tmpStream.getTracks().forEach(track => track.stop()));
-      } catch (err) {
-        cameraStatus.textContent = '카메라 권한이 없거나 실행할 수 없습니다.';
-        alert('카메라 권한을 허용해 주세요. 권한 허용 후 다시 시도하거나 바코드수동조회를 사용해 주세요.');
-        stopScanner();
-        return;
-      }
+        codeReader = new ZXingBrowser.BrowserMultiFormatReader();
+        scanning = true;
 
-      if (typeof Html5Qrcode === 'undefined') {
-        cameraStatus.textContent = '스캐너 라이브러리를 불러오지 못했습니다.';
-        alert('스캐너를 시작하지 못했습니다. 인터넷 연결을 확인한 뒤 다시 시도해 주세요.');
-        stopScanner();
-        return;
-      }
+        const hints = new Map();
+        const formats = [
+          ZXingBrowser.BarcodeFormat.CODE_128,
+          ZXingBrowser.BarcodeFormat.CODE_39,
+          ZXingBrowser.BarcodeFormat.EAN_13,
+          ZXingBrowser.BarcodeFormat.EAN_8,
+          ZXingBrowser.BarcodeFormat.UPC_A,
+          ZXingBrowser.BarcodeFormat.UPC_E,
+          ZXingBrowser.BarcodeFormat.ITF,
+          ZXingBrowser.BarcodeFormat.CODABAR
+        ];
+        hints.set(ZXingBrowser.DecodeHintType.POSSIBLE_FORMATS, formats);
 
-      try {
-        html5Qr = new Html5Qrcode('video');
-        scannerActive = true;
-
-        const onScanSuccess = (decodedText) => {
-          const value = normalizeBarcode(decodedText);
-          if (!value || !scannerActive) return;
-          barcodeInput.value = value;
-          cameraStatus.textContent = `스캔 완료: ${value}`;
-          stopScanner().then(() => renderResult(value));
-        };
-
-        const config = {
-          fps: 10,
-          aspectRatio: 1.333334,
-          qrbox: (viewfinderWidth, viewfinderHeight) => {
-            const edge = Math.floor(Math.min(viewfinderWidth, viewfinderHeight) * 0.72);
-            return { width: edge, height: Math.floor(edge * 0.55) };
+        videoControls = await codeReader.decodeFromConstraints(
+          {
+            video: {
+              facingMode: { ideal: 'environment' },
+              width: { ideal: 1280 },
+              height: { ideal: 720 }
+            },
+            audio: false
           },
-          rememberLastUsedCamera: true,
-          supportedScanTypes: [Html5QrcodeScanType.SCAN_TYPE_CAMERA]
-        };
-
-        await html5Qr.start(
-          { facingMode: { ideal: 'environment' } },
-          config,
-          onScanSuccess,
-          () => {}
+          'scannerRegion',
+          (result, err, controls) => {
+            if (result) {
+              const value = normalizeBarcode(result.text);
+              barcodeInput.value = value;
+              cameraStatus.textContent = `스캔 완료: ${value}`;
+              stopScanner().then(() => renderResult(value));
+            }
+          },
+          hints
         );
 
         cameraStatus.textContent = '카메라 스캔 준비 완료';
       } catch (err) {
-        cameraStatus.textContent = '카메라 스캐너를 시작하지 못했습니다.';
-        alert('카메라 스캐너를 시작하지 못했습니다. 다른 브라우저로 시도하거나 바코드수동조회를 사용해 주세요.');
+        alert('카메라스캐너를 시작하지 못했습니다. 권한을 확인하거나 아래 "카메라 사진으로 인식"을 사용해 주세요.');
         await stopScanner();
       }
     }
 
-    async function stopScanner() {
-      scanning = false;
-      scannerActive = false;
+    async function scanCapturedImage(file) {
+      if (!file) return;
 
-      if (scanRaf) cancelAnimationFrame(scanRaf);
-      scanRaf = null;
-
-      if (html5Qr) {
-        try {
-          if (html5Qr.isScanning) {
-            await html5Qr.stop();
-          }
-        } catch (err) {
-          // ignore stop errors
-        }
-        try {
-          await html5Qr.clear();
-        } catch (err) {
-          // ignore clear errors
-        }
-        html5Qr = null;
+      if (!window.ZXingBrowser || !window.ZXingBrowser.BrowserMultiFormatReader) {
+        alert('이미지 인식 라이브러리를 불러오지 못했습니다.');
+        return;
       }
 
-      if (video) {
-        video.innerHTML = '';
-      }
+      cameraStatus.textContent = '촬영한 이미지에서 바코드를 인식 중입니다...';
 
-      if (stream) {
-        stream.getTracks().forEach(track => track.stop());
-        stream = null;
+      const imgUrl = URL.createObjectURL(file);
+      try {
+        const reader = new ZXingBrowser.BrowserMultiFormatReader();
+        const result = await reader.decodeFromImageUrl(imgUrl);
+        const value = normalizeBarcode(result.text);
+        barcodeInput.value = value;
+        cameraStatus.textContent = `이미지 인식 완료: ${value}`;
+        renderResult(value);
+      } catch (err) {
+        alert('촬영한 이미지에서 바코드를 인식하지 못했습니다. 바코드가 선명하게 보이도록 다시 촬영해 주세요.');
+        cameraStatus.textContent = '이미지 인식 실패';
+      } finally {
+        URL.revokeObjectURL(imgUrl);
+        captureInput.value = '';
       }
-
-      scannerModal.classList.remove('open');
-      scannerModal.setAttribute('aria-hidden', 'true');
     }
 
-    openScannerBtn.addEventListener('click', startScanner);
+    openScannerBtn.addEventListener('click', startLiveScanner);
     closeScannerBtn.addEventListener('click', stopScanner);
     scannerModal.addEventListener('click', (e) => {
       if (e.target === scannerModal) stopScanner();
     });
 
-    renderResult('10003292');
+    captureFallbackBtn.addEventListener('click', () => captureInput.click());
+    captureInput.addEventListener('change', (e) => {
+      const file = e.target.files && e.target.files[0];
+      scanCapturedImage(file);
+    });
   </script>
 </body>
 </html>
