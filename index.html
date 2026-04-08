@@ -340,12 +340,21 @@
       background:#000;
       aspect-ratio:3/4;
     }
-    video{
-      width:100%;
-      height:100%;
+    video,
+    #video,
+    #video video,
+    #video canvas{
+      width:100% !important;
+      height:100% !important;
       object-fit:cover;
       display:block;
       background:#000;
+      border-radius:18px;
+    }
+    #video{
+      min-height:100%;
+      position:relative;
+      z-index:1;
     }
     .scan-box{
       position:absolute;
@@ -438,7 +447,7 @@
         <button class="scanner-close" id="closeScannerBtn">닫기</button>
       </div>
       <div class="video-wrap">
-        <video id="video" playsinline muted></video>
+        <div id="video"></div>
         <div class="scan-box" aria-hidden="true"></div>
       </div>
       <div class="scanner-note" id="scannerNote">바코드를 화면 중앙에 맞춰 주세요.</div>
@@ -682,8 +691,9 @@
 
         const config = {
           fps: 10,
+          aspectRatio: 1.333334,
           qrbox: (viewfinderWidth, viewfinderHeight) => {
-            const edge = Math.floor(Math.min(viewfinderWidth, viewfinderHeight) * 0.7);
+            const edge = Math.floor(Math.min(viewfinderWidth, viewfinderHeight) * 0.72);
             return { width: edge, height: Math.floor(edge * 0.55) };
           },
           rememberLastUsedCamera: true,
@@ -691,7 +701,7 @@
         };
 
         await html5Qr.start(
-          { facingMode: 'environment' },
+          { facingMode: { ideal: 'environment' } },
           config,
           onScanSuccess,
           () => {}
@@ -729,8 +739,6 @@
       }
 
       if (video) {
-        video.pause?.();
-        video.srcObject = null;
         video.innerHTML = '';
       }
 
