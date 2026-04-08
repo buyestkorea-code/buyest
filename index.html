@@ -2,24 +2,25 @@
 <html lang="ko">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
   <title>바이스트키즈 2026행사 페이지</title>
   <style>
     :root{
-      --bg:#f6f7fb;
+      --bg:#f5f7fb;
       --panel:#ffffff;
       --text:#101828;
       --muted:#667085;
       --line:#e6e8ef;
-      --brand:#111827;
-      --accent:#0f766e;
-      --danger:#b42318;
+      --navy:#0b1737;
+      --navy2:#122453;
+      --ok:#067647;
       --okbg:#ecfdf3;
       --okbd:#abefc6;
-      --ngbg:#fef3f2;
-      --ngbd:#fecdca;
+      --bad:#b42318;
+      --badbg:#fef3f2;
+      --badbd:#fecdca;
       --shadow:0 14px 40px rgba(15,23,42,.08);
-      --radius:22px;
+      --radius:24px;
     }
     *{box-sizing:border-box}
     body{
@@ -28,11 +29,11 @@
       background:linear-gradient(180deg,#fbfbfd 0%, #f4f6fb 100%);
       color:var(--text);
     }
-    .wrap{max-width:980px;margin:0 auto;padding:28px 16px 60px}
+    .wrap{max-width:980px;margin:0 auto;padding:26px 16px 64px}
     .hero{
       border-radius:32px;
       padding:24px 20px;
-      background:radial-gradient(circle at top left, #152b67 0%, #0d1737 55%, #081024 100%);
+      background:radial-gradient(circle at top left, #162d68 0%, #0c1738 55%, #091024 100%);
       color:#fff;
       box-shadow:var(--shadow);
       margin-bottom:18px;
@@ -40,7 +41,6 @@
     .hero-badge{
       display:inline-flex;
       align-items:center;
-      gap:8px;
       padding:10px 16px;
       border:1px solid rgba(255,255,255,.12);
       border-radius:999px;
@@ -85,6 +85,7 @@
       font-size:14px;
       line-height:1.6;
     }
+    .btn-row{display:flex;gap:10px;flex-wrap:wrap}
     button{
       appearance:none;border:none;cursor:pointer;
       border-radius:18px;
@@ -92,17 +93,10 @@
       font-size:16px;font-weight:800;
       transition:.18s ease;
     }
-    .btn-main{
-      width:100%;
-      background:#0b1737;
-      color:#fff;
-    }
+    .btn-main{width:100%;background:var(--navy);color:#fff}
     .btn-main:active{transform:translateY(1px)}
-    .btn-soft{
-      background:#eef2ff;
-      color:#1f2a44;
-    }
-    .btn-row{display:flex;gap:10px;flex-wrap:wrap}
+    .btn-soft{background:#eef2ff;color:#24314f}
+    .btn-soft.small{padding:13px 16px;font-size:15px}
     input[type="text"]{
       width:100%;
       border:1px solid var(--line);
@@ -158,7 +152,7 @@
       line-height:1;
       letter-spacing:-.05em;
       margin-bottom:18px;
-      color:#0b1737;
+      color:var(--navy);
       word-break:break-word;
     }
     .meta{
@@ -178,7 +172,7 @@
       font-size:16px;
       background:var(--okbg);
       border:1px solid var(--okbd);
-      color:#067647;
+      color:var(--ok);
     }
     .color-section{
       border:1px solid var(--line);
@@ -196,7 +190,7 @@
     .color-name{
       font-size:18px;
       font-weight:900;
-      color:#0b1737;
+      color:var(--navy);
       word-break:break-word;
     }
     .color-sub{
@@ -223,7 +217,7 @@
     .size-name{
       font-size:20px;
       font-weight:900;
-      color:#0b1737;
+      color:var(--navy);
     }
     .qty{
       display:inline-flex;
@@ -235,16 +229,8 @@
       font-size:16px;
       font-weight:900;
     }
-    .qty.ok{
-      background:var(--okbg);
-      border:1px solid var(--okbd);
-      color:#067647;
-    }
-    .qty.no{
-      background:var(--ngbg);
-      border:1px solid var(--ngbd);
-      color:var(--danger);
-    }
+    .qty.ok{background:var(--okbg);border:1px solid var(--okbd);color:var(--ok)}
+    .qty.no{background:var(--badbg);border:1px solid var(--badbd);color:var(--bad)}
     .footer-note{
       margin-top:18px;
       color:#667085;
@@ -287,13 +273,18 @@
     .video-wrap{
       position:relative;
       width:100%;
-      aspect-ratio: 3 / 4;
+      aspect-ratio:3/4;
       background:#000;
       border-radius:22px;
       overflow:hidden;
       border:1px solid rgba(255,255,255,.08);
     }
-    #scannerRegion,
+    #scannerRegion{
+      position:absolute;
+      inset:0;
+      overflow:hidden;
+      z-index:1;
+    }
     #scannerRegion video,
     #scannerRegion canvas{
       width:100% !important;
@@ -302,16 +293,12 @@
       display:block !important;
       background:#000;
     }
-    #scannerRegion{
-      position:absolute;
-      inset:0;
-    }
     .scan-box{
       position:absolute;
       left:50%; top:50%;
       transform:translate(-50%,-50%);
       width:68%;
-      aspect-ratio: 1.8 / 1;
+      aspect-ratio:1.8/1;
       border:6px solid rgba(255,255,255,.92);
       border-radius:34px;
       box-shadow:0 0 0 9999px rgba(0,0,0,.16);
@@ -323,6 +310,13 @@
       color:#e5e7eb;
       font-size:14px;
       line-height:1.6;
+      white-space:pre-line;
+    }
+    .camera-guidance{
+      margin-top:10px;
+      color:#98a2b3;
+      font-size:13px;
+      line-height:1.6;
     }
 
     @media (max-width: 720px){
@@ -331,7 +325,7 @@
       .card,.result{padding:18px}
       .size-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
       .modal-box{padding:14px}
-      .video-wrap{aspect-ratio: 3 / 5}
+      .video-wrap{aspect-ratio:3/5}
     }
   </style>
 </head>
@@ -352,10 +346,11 @@
         <h2>카메라스캔</h2>
         <div class="btn-row">
           <button class="btn-main" id="openScannerBtn" type="button">카메라 스캔 시작</button>
-          <button class="btn-soft" id="captureFallbackBtn" type="button">카메라 사진으로 인식</button>
+          <button class="btn-soft small" id="captureFallbackBtn" type="button">사진으로 바코드 인식</button>
           <input id="captureInput" type="file" accept="image/*" capture="environment" hidden />
         </div>
         <p class="hint" id="cameraStatus">모바일 브라우저에서 카메라 권한 허용 후 사용하세요.</p>
+        <div class="camera-guidance">실물 바코드 값은 숫자만 인식합니다. 예시 택처럼 바코드가 두 군데 인쇄되어 있어도 실제 조회값은 같은 숫자 바코드입니다.</div>
       </div>
 
       <div class="card">
@@ -380,7 +375,7 @@
     <div class="modal-box">
       <div class="modal-top">
         <div class="modal-title">카메라스캔</div>
-        <button class="btn-soft" id="closeScannerBtn" type="button">닫기</button>
+        <button class="btn-soft small" id="closeScannerBtn" type="button">닫기</button>
       </div>
       <div class="video-wrap">
         <div id="scannerRegion"></div>
@@ -391,7 +386,7 @@
   </div>
 
   <script src="./data.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/@zxing/browser@0.1.5/umd/zxing-browser.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@ericblade/quagga2/dist/quagga.min.js"></script>
   <script>
     const PREFIX_RE = /^(부|행|백|본)_/;
     const resultArea = document.getElementById('resultArea');
@@ -406,9 +401,8 @@
     const scannerNote = document.getElementById('scannerNote');
     const scannerRegion = document.getElementById('scannerRegion');
 
-    let codeReader = null;
-    let videoControls = null;
-    let scanning = false;
+    let quaggaStarted = false;
+    let quaggaDetectedHandler = null;
 
     function normalizeBarcode(value) {
       return String(value ?? '').trim().replace(/\.0$/, '');
@@ -429,21 +423,12 @@
       const colorCut = left.lastIndexOf(' ');
       const family = colorCut >= 0 ? left.slice(0, colorCut).trim() : left;
       const color = colorCut >= 0 ? left.slice(colorCut + 1).trim() : '';
-      return {
-        original,
-        normalized: withoutPrefix,
-        group: left,
-        family,
-        color,
-        size
-      };
+      return { original, normalized: withoutPrefix, group: left, family, color, size };
     }
 
     function sizeRank(value) {
       const s = String(value || '').trim().toUpperCase();
-      const map = {
-        'XXXS': 1, 'XXS': 2, 'XS': 3, 'S': 4, 'M': 5, 'L': 6, 'XL': 7, 'XXL': 8, 'XXXL': 9, 'TU': 10
-      };
+      const map = {'XXXS':1,'XXS':2,'XS':3,'S':4,'M':5,'L':6,'XL':7,'XXL':8,'XXXL':9,'TU':10};
       if (Object.prototype.hasOwnProperty.call(map, s)) return { bucket: 1, value: map[s], label: s };
       const numeric = s.match(/^(\d+(?:\.\d+)?)/);
       if (numeric) return { bucket: 0, value: parseFloat(numeric[1]), label: s };
@@ -464,7 +449,6 @@
       let item = '';
       let barcode = '';
       let qty = 0;
-
       if (Array.isArray(row)) {
         [brand, item, barcode, qty] = row;
       } else if (row && typeof row === 'object') {
@@ -473,15 +457,8 @@
         barcode = row.barcode || '';
         qty = row.qty || 0;
       }
-
       const parsed = parseItem(item);
-      return {
-        brand,
-        item,
-        barcode: normalizeBarcode(barcode),
-        qty: Number(qty) || 0,
-        ...parsed
-      };
+      return { brand, item, barcode: normalizeBarcode(barcode), qty: Number(qty) || 0, ...parsed };
     });
 
     const barcodeMap = new Map();
@@ -500,15 +477,16 @@
         if (!colorMap.has(colorKey)) colorMap.set(colorKey, []);
         colorMap.get(colorKey).push(row);
       }
-      return [...colorMap.entries()].map(([color, items]) => {
-        const sorted = items.slice().sort((a, b) => compareSize(a.size, b.size));
-        return { color, items: sorted };
-      }).sort((a, b) => a.color.localeCompare(b.color, 'ko'));
+      return [...colorMap.entries()].map(([color, items]) => ({
+        color,
+        items: items.slice().sort((a, b) => compareSize(a.size, b.size))
+      })).sort((a, b) => a.color.localeCompare(b.color, 'ko'));
     }
 
     function qtyBadge(qty) {
-      if (qty > 0) return `<div class="qty ok">재고 ${qty}</div>`;
-      return `<div class="qty no">품절</div>`;
+      return qty > 0
+        ? `<div class="qty ok">재고 ${qty}</div>`
+        : `<div class="qty no">품절</div>`;
     }
 
     function renderNotFound(barcode) {
@@ -574,105 +552,137 @@
     });
 
     async function stopScanner() {
-      scanning = false;
-      if (videoControls && typeof videoControls.stop === 'function') {
-        try { await videoControls.stop(); } catch (e) {}
+      if (window.Quagga && quaggaStarted) {
+        try {
+          window.Quagga.offDetected(quaggaDetectedHandler);
+        } catch (e) {}
+        try {
+          window.Quagga.stop();
+        } catch (e) {}
       }
-      videoControls = null;
-      codeReader = null;
+      quaggaStarted = false;
+      quaggaDetectedHandler = null;
       scannerRegion.innerHTML = '';
       scannerModal.classList.remove('open');
       scannerModal.setAttribute('aria-hidden', 'true');
     }
 
-    async function startLiveScanner() {
+    function startLiveScanner() {
       scannerModal.classList.add('open');
       scannerModal.setAttribute('aria-hidden', 'false');
-      scannerNote.textContent = '바코드를 화면 중앙에 맞춰 주세요.';
+      scannerNote.textContent = '바코드를 화면 중앙에 맞춰 주세요.\n잘 안 되면 "사진으로 바코드 인식"을 사용하세요.';
       cameraStatus.textContent = '카메라 준비 중...';
 
       if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
         alert('이 브라우저에서는 카메라를 사용할 수 없습니다. 바코드수동조회를 사용해 주세요.');
-        await stopScanner();
+        stopScanner();
         return;
       }
 
-      if (!window.ZXingBrowser || !window.ZXingBrowser.BrowserMultiFormatReader) {
+      if (!window.Quagga) {
         alert('스캐너 라이브러리를 불러오지 못했습니다. 인터넷 연결을 확인해 주세요.');
-        await stopScanner();
+        stopScanner();
         return;
       }
 
-      try {
-        codeReader = new ZXingBrowser.BrowserMultiFormatReader();
-        scanning = true;
-
-        const hints = new Map();
-        const formats = [
-          ZXingBrowser.BarcodeFormat.CODE_128,
-          ZXingBrowser.BarcodeFormat.CODE_39,
-          ZXingBrowser.BarcodeFormat.EAN_13,
-          ZXingBrowser.BarcodeFormat.EAN_8,
-          ZXingBrowser.BarcodeFormat.UPC_A,
-          ZXingBrowser.BarcodeFormat.UPC_E,
-          ZXingBrowser.BarcodeFormat.ITF,
-          ZXingBrowser.BarcodeFormat.CODABAR
-        ];
-        hints.set(ZXingBrowser.DecodeHintType.POSSIBLE_FORMATS, formats);
-
-        videoControls = await codeReader.decodeFromConstraints(
-          {
-            video: {
-              facingMode: { ideal: 'environment' },
-              width: { ideal: 1280 },
-              height: { ideal: 720 }
-            },
-            audio: false
+      window.Quagga.init({
+        inputStream: {
+          type: 'LiveStream',
+          target: scannerRegion,
+          constraints: {
+            facingMode: 'environment',
+            width: { ideal: 1280 },
+            height: { ideal: 720 }
           },
-          'scannerRegion',
-          (result, err, controls) => {
-            if (result) {
-              const value = normalizeBarcode(result.text);
-              barcodeInput.value = value;
-              cameraStatus.textContent = `스캔 완료: ${value}`;
-              stopScanner().then(() => renderResult(value));
-            }
-          },
-          hints
-        );
+          area: { top: '18%', right: '10%', left: '10%', bottom: '18%' }
+        },
+        locator: {
+          patchSize: 'medium',
+          halfSample: true
+        },
+        numOfWorkers: 0,
+        decoder: {
+          readers: [
+            'ean_reader',
+            'ean_8_reader',
+            'upc_reader',
+            'upc_e_reader',
+            'code_128_reader',
+            'code_39_reader',
+            'codabar_reader',
+            'i2of5_reader',
+            '2of5_reader'
+          ]
+        },
+        locate: true
+      }, function(err) {
+        if (err) {
+          alert('카메라스캐너를 시작하지 못했습니다. 권한을 확인하거나 "사진으로 바코드 인식"을 사용해 주세요.');
+          cameraStatus.textContent = '카메라 스캐너 시작 실패';
+          stopScanner();
+          return;
+        }
 
+        quaggaStarted = true;
+        window.Quagga.start();
         cameraStatus.textContent = '카메라 스캔 준비 완료';
-      } catch (err) {
-        alert('카메라스캐너를 시작하지 못했습니다. 권한을 확인하거나 아래 "카메라 사진으로 인식"을 사용해 주세요.');
-        await stopScanner();
-      }
+
+        quaggaDetectedHandler = function(result) {
+          const code = normalizeBarcode(result?.codeResult?.code || '');
+          if (!code) return;
+          barcodeInput.value = code;
+          cameraStatus.textContent = `스캔 완료: ${code}`;
+          stopScanner();
+          renderResult(code);
+        };
+
+        window.Quagga.onDetected(quaggaDetectedHandler);
+      });
     }
 
-    async function scanCapturedImage(file) {
+    function scanCapturedImage(file) {
       if (!file) return;
-
-      if (!window.ZXingBrowser || !window.ZXingBrowser.BrowserMultiFormatReader) {
+      if (!window.Quagga) {
         alert('이미지 인식 라이브러리를 불러오지 못했습니다.');
         return;
       }
 
       cameraStatus.textContent = '촬영한 이미지에서 바코드를 인식 중입니다...';
+      const objectUrl = URL.createObjectURL(file);
 
-      const imgUrl = URL.createObjectURL(file);
-      try {
-        const reader = new ZXingBrowser.BrowserMultiFormatReader();
-        const result = await reader.decodeFromImageUrl(imgUrl);
-        const value = normalizeBarcode(result.text);
-        barcodeInput.value = value;
-        cameraStatus.textContent = `이미지 인식 완료: ${value}`;
-        renderResult(value);
-      } catch (err) {
-        alert('촬영한 이미지에서 바코드를 인식하지 못했습니다. 바코드가 선명하게 보이도록 다시 촬영해 주세요.');
-        cameraStatus.textContent = '이미지 인식 실패';
-      } finally {
-        URL.revokeObjectURL(imgUrl);
+      window.Quagga.decodeSingle({
+        src: objectUrl,
+        numOfWorkers: 0,
+        inputStream: { size: 1200 },
+        decoder: {
+          readers: [
+            'ean_reader',
+            'ean_8_reader',
+            'upc_reader',
+            'upc_e_reader',
+            'code_128_reader',
+            'code_39_reader',
+            'codabar_reader',
+            'i2of5_reader',
+            '2of5_reader'
+          ]
+        },
+        locate: true
+      }, function(result) {
+        URL.revokeObjectURL(objectUrl);
         captureInput.value = '';
-      }
+
+        const code = normalizeBarcode(result?.codeResult?.code || '');
+        if (!code) {
+          alert('촬영한 이미지에서 바코드를 인식하지 못했습니다. 바코드가 선명하게 보이도록 다시 촬영해 주세요.');
+          cameraStatus.textContent = '이미지 인식 실패';
+          return;
+        }
+
+        barcodeInput.value = code;
+        cameraStatus.textContent = `이미지 인식 완료: ${code}`;
+        renderResult(code);
+      });
     }
 
     openScannerBtn.addEventListener('click', startLiveScanner);
