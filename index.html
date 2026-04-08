@@ -446,6 +446,7 @@
   </div>
 
   <script src="./data.js"></script>
+  <script src="https://unpkg.com/html5-qrcode" defer></script>
   <script>
     const PREFIX_RE = /^(부_|행_|백_|본_)/;
     const resultArea = document.getElementById('resultArea');
@@ -462,6 +463,8 @@
     let detector = null;
     let scanRaf = null;
     let scanning = false;
+    let html5Qr = null;
+    let scannerActive = false;
 
     function normalizeBarcode(value) {
       return String(value || '').trim();
@@ -507,7 +510,11 @@
     }
 
     const parsedRows = (window.STOCK_DATA || []).map((row) => {
-      let brand, item, barcode, qty;
+      let brand = '';
+      let item = '';
+      let barcode = '';
+      let qty = 0;
+
       if (Array.isArray(row)) {
         [brand, item, barcode, qty] = row;
       } else if (row && typeof row === 'object') {
@@ -515,12 +522,8 @@
         item = row.item || row.raw || '';
         barcode = row.barcode || '';
         qty = row.qty || 0;
-      } else {
-        brand = '';
-        item = '';
-        barcode = '';
-        qty = 0;
       }
+
       const parsed = parseItem(item);
       return {
         brand,
@@ -636,78 +639,106 @@
     });
 
     async function startScanner() {
-      if (!('BarcodeDetector' in window)) {
-        cameraStatus.textContent = '이 브라우저는 카메라 바코드 스캔을 지원하지 않아 수동조회로 사용해 주세요.';
-        alert('현재 브라우저는 카메라 바코드 스캔을 지원하지 않습니다. 바코드수동조회로 사용해 주세요.');
+      scannerModal.classList.add('open');
+      scannerModal.setAttribute('aria-hidden', 'false');
+      scannerNote.textContent = '바코드를 화면 중앙에 맞춰 주세요.';
+      cameraStatus.textContent = '카메라 준비 중...';
+
+      if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+        cameraStatus.textContent = '이 브라우저에서는 카메라를 사용할 수 없습니다.';
+        alert('현재 브라우저에서는 카메라를 사용할 수 없습니다. 바코드수동조회를 사용해 주세요.');
+        stopScanner();
         return;
       }
 
       try {
-        detector = new BarcodeDetector({
-          formats: ['ean_13', 'ean_8', 'code_128', 'code_39', 'codabar', 'upc_a', 'upc_e', 'itf']
-        });
-      } catch (err) {
-        cameraStatus.textContent = '스캐너를 시작하지 못했습니다. 수동조회로 사용해 주세요.';
-        alert('카메라 스캐너를 시작할 수 없습니다. 바코드수동조회를 사용해 주세요.');
-        return;
-      }
-
-      try {
-        stream = await navigator.mediaDevices.getUserMedia({
-          video: { facingMode: { ideal: 'environment' } },
-          audio: false
-        });
-        video.srcObject = stream;
-        await video.play();
-        scannerModal.classList.add('open');
-        scannerModal.setAttribute('aria-hidden', 'false');
-        scannerNote.textContent = '바코드를 화면 중앙에 맞춰 주세요.';
-        cameraStatus.textContent = '카메라 스캔 준비 완료';
-        scanning = true;
-        scanLoop();
+        await navigator.mediaDevices.getUserMedia({ video: true, audio: false })
+          .then((tmpStream) => tmpStream.getTracks().forEach(track => track.stop()));
       } catch (err) {
         cameraStatus.textContent = '카메라 권한이 없거나 실행할 수 없습니다.';
-        alert('카메라를 사용할 수 없습니다. 권한을 허용하거나 바코드수동조회를 사용해 주세요.');
+        alert('카메라 권한을 허용해 주세요. 권한 허용 후 다시 시도하거나 바코드수동조회를 사용해 주세요.');
+        stopScanner();
+        return;
       }
-    }
 
-    async function scanLoop() {
-      if (!scanning || !video || video.readyState < 2 || !detector) {
-        scanRaf = requestAnimationFrame(scanLoop);
+      if (typeof Html5Qrcode === 'undefined') {
+        cameraStatus.textContent = '스캐너 라이브러리를 불러오지 못했습니다.';
+        alert('스캐너를 시작하지 못했습니다. 인터넷 연결을 확인한 뒤 다시 시도해 주세요.');
+        stopScanner();
         return;
       }
 
       try {
-        const codes = await detector.detect(video);
-        if (codes && codes.length) {
-          const value = normalizeBarcode(codes[0].rawValue || codes[0].rawValueText || '');
-          if (value) {
-            barcodeInput.value = value;
-            stopScanner();
-            renderResult(value);
-            cameraStatus.textContent = `스캔 완료: ${value}`;
-            return;
-          }
-        }
-      } catch (err) {
-        // ignore transient scan errors
-      }
+        html5Qr = new Html5Qrcode('video');
+        scannerActive = true;
 
-      scanRaf = requestAnimationFrame(scanLoop);
+        const onScanSuccess = (decodedText) => {
+          const value = normalizeBarcode(decodedText);
+          if (!value || !scannerActive) return;
+          barcodeInput.value = value;
+          cameraStatus.textContent = `스캔 완료: ${value}`;
+          stopScanner().then(() => renderResult(value));
+        };
+
+        const config = {
+          fps: 10,
+          qrbox: (viewfinderWidth, viewfinderHeight) => {
+            const edge = Math.floor(Math.min(viewfinderWidth, viewfinderHeight) * 0.7);
+            return { width: edge, height: Math.floor(edge * 0.55) };
+          },
+          rememberLastUsedCamera: true,
+          supportedScanTypes: [Html5QrcodeScanType.SCAN_TYPE_CAMERA]
+        };
+
+        await html5Qr.start(
+          { facingMode: 'environment' },
+          config,
+          onScanSuccess,
+          () => {}
+        );
+
+        cameraStatus.textContent = '카메라 스캔 준비 완료';
+      } catch (err) {
+        cameraStatus.textContent = '카메라 스캐너를 시작하지 못했습니다.';
+        alert('카메라 스캐너를 시작하지 못했습니다. 다른 브라우저로 시도하거나 바코드수동조회를 사용해 주세요.');
+        await stopScanner();
+      }
     }
 
-    function stopScanner() {
+    async function stopScanner() {
       scanning = false;
+      scannerActive = false;
+
       if (scanRaf) cancelAnimationFrame(scanRaf);
       scanRaf = null;
-      if (video) {
-        video.pause();
-        video.srcObject = null;
+
+      if (html5Qr) {
+        try {
+          if (html5Qr.isScanning) {
+            await html5Qr.stop();
+          }
+        } catch (err) {
+          // ignore stop errors
+        }
+        try {
+          await html5Qr.clear();
+        } catch (err) {
+          // ignore clear errors
+        }
+        html5Qr = null;
       }
+
+      if (video) {
+        video.pause?.();
+        video.srcObject = null;
+        video.innerHTML = '';
+      }
+
       if (stream) {
         stream.getTracks().forEach(track => track.stop());
         stream = null;
       }
+
       scannerModal.classList.remove('open');
       scannerModal.setAttribute('aria-hidden', 'true');
     }
