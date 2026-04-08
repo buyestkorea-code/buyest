@@ -1,0 +1,724 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>바이스트키즈 2026행사 페이지</title>
+  <style>
+    :root{
+      --bg:#f6f7fb;
+      --panel:#ffffff;
+      --text:#101828;
+      --muted:#667085;
+      --line:#e6e8ef;
+      --brand:#111827;
+      --accent:#0f766e;
+      --danger:#b42318;
+      --okbg:#ecfdf3;
+      --okbd:#abefc6;
+      --ngbg:#fef3f2;
+      --ngbd:#fecdca;
+      --shadow:0 14px 40px rgba(15,23,42,.08);
+      --radius:22px;
+    }
+    *{box-sizing:border-box}
+    body{
+      margin:0;
+      font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Noto Sans KR","Apple SD Gothic Neo",sans-serif;
+      background:linear-gradient(180deg,#fbfbfd 0%, #f4f6fb 100%);
+      color:var(--text);
+    }
+    .wrap{
+      max-width:760px;
+      margin:0 auto;
+      padding:18px 14px 40px;
+    }
+    .hero{
+      background:linear-gradient(135deg,#111827 0%,#1f2937 65%,#374151 100%);
+      color:#fff;
+      border-radius:28px;
+      padding:26px 20px 22px;
+      box-shadow:var(--shadow);
+    }
+    .eyebrow{
+      display:inline-block;
+      font-size:12px;
+      letter-spacing:.08em;
+      text-transform:uppercase;
+      opacity:.8;
+      border:1px solid rgba(255,255,255,.2);
+      border-radius:999px;
+      padding:6px 10px;
+      margin-bottom:12px;
+    }
+    h1{
+      margin:0;
+      font-size:30px;
+      line-height:1.18;
+      font-weight:800;
+    }
+    .subtitle{
+      margin:10px 0 0;
+      font-size:15px;
+      line-height:1.6;
+      color:rgba(255,255,255,.84);
+    }
+    .section{
+      margin-top:14px;
+      background:var(--panel);
+      border:1px solid var(--line);
+      border-radius:var(--radius);
+      padding:18px;
+      box-shadow:var(--shadow);
+    }
+    .section h2{
+      margin:0 0 12px;
+      font-size:18px;
+      line-height:1.3;
+    }
+    .event-lines{
+      display:grid;
+      gap:10px;
+    }
+    .event-line{
+      min-height:20px;
+      border-bottom:1px dashed #c8cfdd;
+      color:#98a2b3;
+      font-size:14px;
+      padding-bottom:6px;
+    }
+    .controls{
+      display:grid;
+      gap:14px;
+    }
+    .control-card{
+      background:#fafbff;
+      border:1px solid #e9edf6;
+      border-radius:18px;
+      padding:16px;
+    }
+    .label{
+      font-size:14px;
+      font-weight:700;
+      margin-bottom:10px;
+    }
+    .muted{
+      color:var(--muted);
+      font-size:13px;
+      line-height:1.55;
+    }
+    .input-row{
+      display:flex;
+      gap:10px;
+      flex-wrap:wrap;
+      align-items:center;
+    }
+    input[type="text"]{
+      flex:1 1 240px;
+      min-width:0;
+      width:100%;
+      border:1px solid #d7dce8;
+      border-radius:16px;
+      padding:15px 16px;
+      font-size:18px;
+      font-weight:700;
+      outline:none;
+      background:#fff;
+      color:var(--text);
+    }
+    input[type="text"]:focus{
+      border-color:#94a3b8;
+      box-shadow:0 0 0 4px rgba(148,163,184,.15);
+    }
+    button{
+      border:0;
+      border-radius:16px;
+      padding:14px 16px;
+      font-size:16px;
+      font-weight:800;
+      cursor:pointer;
+      transition:transform .08s ease, opacity .2s ease;
+    }
+    button:active{ transform:translateY(1px) }
+    .btn-primary{
+      background:#111827;
+      color:#fff;
+      min-width:120px;
+    }
+    .btn-secondary{
+      background:#0f766e;
+      color:#fff;
+      width:100%;
+    }
+    .btn-light{
+      background:#eef2ff;
+      color:#1d4ed8;
+      width:100%;
+    }
+    .status{
+      margin-top:10px;
+      font-size:13px;
+      color:var(--muted);
+      min-height:18px;
+    }
+    .result-wrap{
+      display:grid;
+      gap:12px;
+    }
+    .empty{
+      border:1px dashed #d0d5dd;
+      background:#fcfcfd;
+      border-radius:18px;
+      padding:20px 16px;
+      text-align:center;
+      color:var(--muted);
+      font-size:15px;
+      line-height:1.7;
+    }
+    .result-head{
+      border-radius:20px;
+      padding:18px;
+      background:linear-gradient(180deg,#ffffff 0%, #f9fafb 100%);
+      border:1px solid var(--line);
+    }
+    .brand-badge{
+      display:inline-block;
+      font-size:12px;
+      font-weight:800;
+      color:#344054;
+      background:#f2f4f7;
+      border-radius:999px;
+      padding:7px 10px;
+      margin-bottom:12px;
+    }
+    .family{
+      font-size:26px;
+      font-weight:900;
+      line-height:1.2;
+      letter-spacing:-.02em;
+      word-break:break-word;
+    }
+    .meta{
+      margin-top:10px;
+      display:grid;
+      gap:6px;
+      font-size:14px;
+      color:#475467;
+    }
+    .hit{
+      margin-top:12px;
+      display:inline-flex;
+      align-items:center;
+      gap:8px;
+      padding:10px 12px;
+      border-radius:999px;
+      background:var(--okbg);
+      border:1px solid var(--okbd);
+      font-size:14px;
+      font-weight:800;
+      color:#067647;
+    }
+    .not-found{
+      border-radius:20px;
+      padding:22px 18px;
+      background:var(--ngbg);
+      border:1px solid var(--ngbd);
+      color:var(--danger);
+    }
+    .not-found .title{
+      font-size:26px;
+      font-weight:900;
+      line-height:1.2;
+    }
+    .color-section{
+      border:1px solid var(--line);
+      border-radius:18px;
+      padding:16px;
+      background:#fff;
+    }
+    .color-title{
+      display:flex;
+      justify-content:space-between;
+      gap:10px;
+      align-items:flex-end;
+      margin-bottom:12px;
+      flex-wrap:wrap;
+    }
+    .color-name{
+      font-size:18px;
+      font-weight:900;
+      line-height:1.2;
+      word-break:break-word;
+    }
+    .color-sub{
+      font-size:13px;
+      color:var(--muted);
+    }
+    .size-grid{
+      display:grid;
+      grid-template-columns:repeat(2,minmax(0,1fr));
+      gap:10px;
+    }
+    .size-card{
+      border:1px solid var(--line);
+      border-radius:16px;
+      padding:14px 12px;
+      background:#f9fafb;
+    }
+    .size-name{
+      font-size:18px;
+      font-weight:900;
+      margin-bottom:8px;
+    }
+    .qty{
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+      min-height:36px;
+      border-radius:999px;
+      padding:0 12px;
+      font-size:16px;
+      font-weight:900;
+      min-width:88px;
+    }
+    .qty.ok{
+      background:var(--okbg);
+      border:1px solid var(--okbd);
+      color:#067647;
+    }
+    .qty.no{
+      background:var(--ngbg);
+      border:1px solid var(--ngbd);
+      color:var(--danger);
+    }
+    .qty.mid{
+      background:#f2f4f7;
+      border:1px solid #d0d5dd;
+      color:#344054;
+    }
+
+    .scanner-modal{
+      position:fixed;
+      inset:0;
+      background:rgba(15,23,42,.74);
+      display:none;
+      align-items:center;
+      justify-content:center;
+      padding:18px;
+      z-index:999;
+    }
+    .scanner-modal.open{ display:flex; }
+    .scanner-panel{
+      width:min(100%,540px);
+      background:#0b1220;
+      color:#fff;
+      border-radius:24px;
+      padding:16px;
+      box-shadow:0 22px 60px rgba(0,0,0,.35);
+    }
+    .scanner-top{
+      display:flex;
+      justify-content:space-between;
+      gap:12px;
+      align-items:center;
+      margin-bottom:12px;
+    }
+    .scanner-title{
+      font-size:18px;
+      font-weight:900;
+    }
+    .scanner-close{
+      background:rgba(255,255,255,.12);
+      color:#fff;
+      min-width:84px;
+      padding:10px 12px;
+    }
+    .video-wrap{
+      position:relative;
+      border-radius:18px;
+      overflow:hidden;
+      background:#000;
+      aspect-ratio:3/4;
+    }
+    video{
+      width:100%;
+      height:100%;
+      object-fit:cover;
+      display:block;
+      background:#000;
+    }
+    .scan-box{
+      position:absolute;
+      left:50%;
+      top:50%;
+      width:70%;
+      height:26%;
+      transform:translate(-50%,-50%);
+      border:3px solid rgba(255,255,255,.92);
+      border-radius:18px;
+      box-shadow:0 0 0 9999px rgba(0,0,0,.24);
+    }
+    .scanner-note{
+      margin-top:12px;
+      font-size:13px;
+      line-height:1.55;
+      color:rgba(255,255,255,.8);
+    }
+    .footer-note{
+      margin-top:14px;
+      text-align:center;
+      color:var(--muted);
+      font-size:12px;
+      line-height:1.6;
+    }
+    @media (min-width:620px){
+      .controls{
+        grid-template-columns:1fr 1fr;
+      }
+      .size-grid{
+        grid-template-columns:repeat(3,minmax(0,1fr));
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <section class="hero">
+      <div class="eyebrow">BUYEST KIDS</div>
+      <h1>바이스트키즈 2026행사 페이지</h1>
+      <p class="subtitle">행사 재고를 빠르게 확인하는 모바일 조회 페이지입니다. 카메라 스캔 또는 바코드 수동조회 후, 같은 품목 그룹을 컬러별/사이즈별로 한 번에 확인할 수 있습니다.</p>
+    </section>
+
+    <section class="section">
+      <h2>행사 설명</h2>
+      <div class="event-lines">
+        <div class="event-line">1. 행사 안내 내용을 입력하세요.</div>
+        <div class="event-line">2. 기간 / 장소 / 운영시간 등을 입력하세요.</div>
+        <div class="event-line">3. 대상 브랜드 또는 상품군을 입력하세요.</div>
+        <div class="event-line">4. 재고조회 관련 주의사항을 입력하세요.</div>
+        <div class="event-line">5. 고객 안내 문구를 입력하세요.</div>
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="controls">
+        <div class="control-card">
+          <div class="label">카메라스캔</div>
+          <button class="btn-secondary" id="openScannerBtn">카메라로 바코드 스캔</button>
+          <div class="status" id="cameraStatus">모바일 브라우저에서 카메라 권한 허용 후 사용하세요.</div>
+        </div>
+
+        <div class="control-card">
+          <div class="label">바코드수동조회</div>
+          <div class="input-row">
+            <input id="barcodeInput" type="text" inputmode="numeric" autocomplete="off" placeholder="바코드 번호 입력" />
+            <button class="btn-primary" id="searchBtn">조회</button>
+          </div>
+          <div class="status">숫자/문자 바코드를 그대로 입력한 뒤 조회하세요.</div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section">
+      <h2>조회 결과</h2>
+      <div id="resultArea" class="result-wrap">
+        <div class="empty">아직 조회한 결과가 없습니다.<br>카메라스캔 또는 바코드수동조회를 사용해 주세요.</div>
+      </div>
+    </section>
+
+    <div class="footer-note">
+      디자인 문구는 index.html에서 자유롭게 수정할 수 있고, 재고 데이터는 data.js만 교체하면 됩니다.
+    </div>
+  </div>
+
+  <div class="scanner-modal" id="scannerModal" aria-hidden="true">
+    <div class="scanner-panel">
+      <div class="scanner-top">
+        <div class="scanner-title">카메라스캔</div>
+        <button class="scanner-close" id="closeScannerBtn">닫기</button>
+      </div>
+      <div class="video-wrap">
+        <video id="video" playsinline muted></video>
+        <div class="scan-box" aria-hidden="true"></div>
+      </div>
+      <div class="scanner-note" id="scannerNote">바코드를 화면 중앙에 맞춰 주세요.</div>
+    </div>
+  </div>
+
+  <script src="./data.js"></script>
+  <script>
+    const PREFIX_RE = /^(부_|행_|백_|본_)/;
+    const resultArea = document.getElementById('resultArea');
+    const barcodeInput = document.getElementById('barcodeInput');
+    const searchBtn = document.getElementById('searchBtn');
+    const openScannerBtn = document.getElementById('openScannerBtn');
+    const closeScannerBtn = document.getElementById('closeScannerBtn');
+    const cameraStatus = document.getElementById('cameraStatus');
+    const scannerModal = document.getElementById('scannerModal');
+    const scannerNote = document.getElementById('scannerNote');
+    const video = document.getElementById('video');
+
+    let stream = null;
+    let detector = null;
+    let scanRaf = null;
+    let scanning = false;
+
+    function normalizeBarcode(value) {
+      return String(value || '').trim();
+    }
+
+    function parseItem(rawItem) {
+      const original = String(rawItem || '').trim();
+      const withoutPrefix = original.replace(PREFIX_RE, '').trim();
+      const splitIndex = withoutPrefix.lastIndexOf('_');
+      const left = splitIndex >= 0 ? withoutPrefix.slice(0, splitIndex).trim() : withoutPrefix;
+      const size = splitIndex >= 0 ? withoutPrefix.slice(splitIndex + 1).trim() : '';
+      const colorCut = left.lastIndexOf(' ');
+      const family = colorCut >= 0 ? left.slice(0, colorCut).trim() : left;
+      const color = colorCut >= 0 ? left.slice(colorCut + 1).trim() : '';
+      return {
+        original,
+        normalized: withoutPrefix,
+        group: left,
+        family,
+        color,
+        size
+      };
+    }
+
+    function sizeRank(value) {
+      const s = String(value || '').trim().toUpperCase();
+      const map = {
+        'XXXS': 1, 'XXS': 2, 'XS': 3, 'S': 4, 'M': 5, 'L': 6, 'XL': 7, 'XXL': 8, 'XXXL': 9, 'TU': 10
+      };
+      if (Object.prototype.hasOwnProperty.call(map, s)) return { bucket: 1, value: map[s], label: s };
+      const numeric = s.match(/^(\d+(?:\.\d+)?)/);
+      if (numeric) return { bucket: 0, value: parseFloat(numeric[1]), label: s };
+      return { bucket: 2, value: s, label: s };
+    }
+
+    function compareSize(a, b) {
+      const ra = sizeRank(a);
+      const rb = sizeRank(b);
+      if (ra.bucket !== rb.bucket) return ra.bucket - rb.bucket;
+      if (ra.value < rb.value) return -1;
+      if (ra.value > rb.value) return 1;
+      return 0;
+    }
+
+    const parsedRows = (window.STOCK_DATA || []).map((row) => {
+      let brand, item, barcode, qty;
+      if (Array.isArray(row)) {
+        [brand, item, barcode, qty] = row;
+      } else if (row && typeof row === 'object') {
+        brand = row.brand || '';
+        item = row.item || row.raw || '';
+        barcode = row.barcode || '';
+        qty = row.qty || 0;
+      } else {
+        brand = '';
+        item = '';
+        barcode = '';
+        qty = 0;
+      }
+      const parsed = parseItem(item);
+      return {
+        brand,
+        item,
+        barcode: normalizeBarcode(barcode),
+        qty: Number(qty) || 0,
+        ...parsed
+      };
+    });
+
+    const barcodeMap = new Map();
+    const familyMap = new Map();
+
+    for (const row of parsedRows) {
+      barcodeMap.set(row.barcode, row);
+      if (!familyMap.has(row.family)) familyMap.set(row.family, []);
+      familyMap.get(row.family).push(row);
+    }
+
+    function buildColorGroups(rows) {
+      const colorMap = new Map();
+      for (const row of rows) {
+        const colorKey = row.color || '기본';
+        if (!colorMap.has(colorKey)) colorMap.set(colorKey, []);
+        colorMap.get(colorKey).push(row);
+      }
+      return [...colorMap.entries()].map(([color, items]) => {
+        const sorted = items.slice().sort((a, b) => compareSize(a.size, b.size));
+        return { color, items: sorted };
+      }).sort((a, b) => a.color.localeCompare(b.color, 'ko'));
+    }
+
+    function qtyBadge(qty) {
+      if (qty > 0) return `<div class="qty ok">재고 ${qty}</div>`;
+      if (qty === 0) return `<div class="qty no">품절</div>`;
+      return `<div class="qty mid">확인필요</div>`;
+    }
+
+    function renderNotFound(barcode) {
+      resultArea.innerHTML = `
+        <div class="not-found">
+          <div class="title">등록되지 않은 바코드</div>
+          <div style="margin-top:10px;font-size:15px;line-height:1.65;">
+            입력한 바코드 <strong>${escapeHtml(barcode)}</strong> 는 현재 데이터에서 찾지 못했습니다.<br>
+            숫자를 다시 확인하거나 다른 바코드를 조회해 주세요.
+          </div>
+        </div>
+      `;
+    }
+
+    function escapeHtml(str) {
+      return String(str || '')
+        .replaceAll('&', '&amp;')
+        .replaceAll('<', '&lt;')
+        .replaceAll('>', '&gt;')
+        .replaceAll('"', '&quot;')
+        .replaceAll("'", '&#39;');
+    }
+
+    function renderResult(barcode) {
+      const hit = barcodeMap.get(normalizeBarcode(barcode));
+      if (!hit) {
+        renderNotFound(barcode);
+        return;
+      }
+
+      const familyRows = familyMap.get(hit.family) || [hit];
+      const colorGroups = buildColorGroups(familyRows);
+      const totalQty = familyRows.reduce((sum, r) => sum + (Number(r.qty) || 0), 0);
+
+      resultArea.innerHTML = `
+        <div class="result-head">
+          <div class="brand-badge">${escapeHtml(hit.brand || '브랜드')}</div>
+          <div class="family">${escapeHtml(hit.family || hit.group || hit.normalized)}</div>
+          <div class="meta">
+            <div>조회 바코드: <strong>${escapeHtml(hit.barcode)}</strong></div>
+            <div>대표 품목: <strong>${escapeHtml(hit.normalized)}</strong></div>
+            <div>그룹 행 수: <strong>${familyRows.length}</strong> / 총 재고: <strong>${totalQty}</strong></div>
+          </div>
+          <div class="hit">현재 조회 행 재고 ${hit.qty}</div>
+        </div>
+        ${colorGroups.map(group => `
+          <div class="color-section">
+            <div class="color-title">
+              <div class="color-name">${escapeHtml(group.color)}</div>
+              <div class="color-sub">${group.items.length}개 옵션</div>
+            </div>
+            <div class="size-grid">
+              ${group.items.map(item => `
+                <div class="size-card">
+                  <div class="size-name">${escapeHtml(item.size || '-')}</div>
+                  ${qtyBadge(item.qty)}
+                </div>
+              `).join('')}
+            </div>
+          </div>
+        `).join('')}
+      `;
+    }
+
+    function runSearch() {
+      const barcode = normalizeBarcode(barcodeInput.value);
+      if (!barcode) {
+        barcodeInput.focus();
+        return;
+      }
+      renderResult(barcode);
+    }
+
+    searchBtn.addEventListener('click', runSearch);
+    barcodeInput.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter') runSearch();
+    });
+
+    async function startScanner() {
+      if (!('BarcodeDetector' in window)) {
+        cameraStatus.textContent = '이 브라우저는 카메라 바코드 스캔을 지원하지 않아 수동조회로 사용해 주세요.';
+        alert('현재 브라우저는 카메라 바코드 스캔을 지원하지 않습니다. 바코드수동조회로 사용해 주세요.');
+        return;
+      }
+
+      try {
+        detector = new BarcodeDetector({
+          formats: ['ean_13', 'ean_8', 'code_128', 'code_39', 'codabar', 'upc_a', 'upc_e', 'itf']
+        });
+      } catch (err) {
+        cameraStatus.textContent = '스캐너를 시작하지 못했습니다. 수동조회로 사용해 주세요.';
+        alert('카메라 스캐너를 시작할 수 없습니다. 바코드수동조회를 사용해 주세요.');
+        return;
+      }
+
+      try {
+        stream = await navigator.mediaDevices.getUserMedia({
+          video: { facingMode: { ideal: 'environment' } },
+          audio: false
+        });
+        video.srcObject = stream;
+        await video.play();
+        scannerModal.classList.add('open');
+        scannerModal.setAttribute('aria-hidden', 'false');
+        scannerNote.textContent = '바코드를 화면 중앙에 맞춰 주세요.';
+        cameraStatus.textContent = '카메라 스캔 준비 완료';
+        scanning = true;
+        scanLoop();
+      } catch (err) {
+        cameraStatus.textContent = '카메라 권한이 없거나 실행할 수 없습니다.';
+        alert('카메라를 사용할 수 없습니다. 권한을 허용하거나 바코드수동조회를 사용해 주세요.');
+      }
+    }
+
+    async function scanLoop() {
+      if (!scanning || !video || video.readyState < 2 || !detector) {
+        scanRaf = requestAnimationFrame(scanLoop);
+        return;
+      }
+
+      try {
+        const codes = await detector.detect(video);
+        if (codes && codes.length) {
+          const value = normalizeBarcode(codes[0].rawValue || codes[0].rawValueText || '');
+          if (value) {
+            barcodeInput.value = value;
+            stopScanner();
+            renderResult(value);
+            cameraStatus.textContent = `스캔 완료: ${value}`;
+            return;
+          }
+        }
+      } catch (err) {
+        // ignore transient scan errors
+      }
+
+      scanRaf = requestAnimationFrame(scanLoop);
+    }
+
+    function stopScanner() {
+      scanning = false;
+      if (scanRaf) cancelAnimationFrame(scanRaf);
+      scanRaf = null;
+      if (video) {
+        video.pause();
+        video.srcObject = null;
+      }
+      if (stream) {
+        stream.getTracks().forEach(track => track.stop());
+        stream = null;
+      }
+      scannerModal.classList.remove('open');
+      scannerModal.setAttribute('aria-hidden', 'true');
+    }
+
+    openScannerBtn.addEventListener('click', startScanner);
+    closeScannerBtn.addEventListener('click', stopScanner);
+    scannerModal.addEventListener('click', (e) => {
+      if (e.target === scannerModal) stopScanner();
+    });
+
+    renderResult('10003292');
+  </script>
+</body>
+</html>
