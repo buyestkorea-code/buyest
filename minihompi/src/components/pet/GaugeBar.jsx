@@ -11,14 +11,15 @@ const LABELS = {
 }
 
 export default function GaugeBar({ type, value }) {
+  const isCritical = value < 30
   return (
     <div>
       <div className="row" style={{ justifyContent: 'space-between', fontSize: 12, marginBottom: 2 }}>
         <span>{LABELS[type]}</span>
-        <span>{value}%</span>
+        <span style={{ color: isCritical ? '#e64545' : 'inherit', fontWeight: isCritical ? 800 : 400 }}>{value}%</span>
       </div>
       <div className="gauge-track">
-        <div className="gauge-fill" style={{ width: `${value}%`, background: COLORS[type] }} />
+        <div className="gauge-fill" style={{ width: `${value}%`, background: isCritical ? '#e64545' : COLORS[type] }} />
       </div>
     </div>
   )

@@ -1,31 +1,71 @@
 import Mascot from '../common/Mascot.jsx'
+import BlobPet from './BlobPet.jsx'
 
 function moodFromGauges(state) {
   const avg = (state.hunger + state.cleanliness + state.happiness) / 3
-  if (avg >= 60) return 'happy'
+  if (avg >= 85) return 'sparkle'
+  if (avg >= 55) return 'happy'
   if (avg >= 30) return 'neutral'
   return 'sad'
+}
+
+function statusMessage(state) {
+  const lowest = Math.min(state.hunger, state.cleanliness, state.happiness)
+  if (lowest === state.hunger && state.hunger < 35) return '배고파요... 밥 주세요!'
+  if (lowest === state.cleanliness && state.cleanliness < 35) return '몸이 더러워요, 씻겨주세요!'
+  if (lowest === state.happiness && state.happiness < 35) return '심심해요, 놀아주세요!'
+  if (state.stage === 'sparkle') return '기분 최고예요! 반짝반짝 ✨'
+  return '오늘도 좋은 하루예요!'
+}
+
+const STAGE_LABEL = {
+  egg: '아직 알이에요!',
+  hatchling: '갓 태어난 친구',
+  grown: '멋지게 자란 친구',
+  sparkle: '반짝반짝 진화한 친구 ✨',
 }
 
 export default function PetStage({ state, outfitName }) {
   if (state.stage === 'egg') {
     return (
       <div className="card stack" style={{ alignItems: 'center' }}>
-        <span style={{ fontSize: 80 }}>🥚</span>
+        <span style={{ fontSize: 80, display: 'inline-block', animation: 'egg-wiggle 2.4s ease-in-out infinite' }}>🥚</span>
         <p style={{ fontWeight: 700 }}>아직 알이에요! 잘 돌봐주면 곧 태어날 거예요.</p>
+        <style>{`
+          @keyframes egg-wiggle {
+            0%, 100% { transform: rotate(-4deg); }
+            50% { transform: rotate(4deg); }
+          }
+        `}</style>
       </div>
     )
   }
 
   const mood = moodFromGauges(state)
+  const CharacterComponent = state.skin === 'blob' ? BlobPet : Mascot
+  const isSparkleStage = state.stage === 'sparkle'
 
   return (
-    <div className="card stack" style={{ alignItems: 'center' }}>
-      <Mascot size={140} mood={mood} />
+    <div className="card stack" style={{ alignItems: 'center', position: 'relative' }}>
+      <div className="pill" style={{ position: 'relative' }}>
+        {statusMessage(state)}
+      </div>
+      <div style={{ position: 'relative', animation: 'pet-float 3s ease-in-out infinite' }}>
+        <CharacterComponent size={140} mood={mood} />
+        {isSparkleStage && (
+          <span style={{ position: 'absolute', top: -10, right: -10, fontSize: 28 }}>✨</span>
+        )}
+      </div>
       <p style={{ fontWeight: 700 }}>
-        {state.stage === 'grown' ? '멋지게 자란 승목이 친구' : '갓 태어난 승목이 친구'}
+        {STAGE_LABEL[state.stage]}
         {outfitName ? ` · ${outfitName} 착용중` : ''}
       </p>
+      <style>{`
+        @keyframes pet-float {
+          0%, 100% { transform: translateY(0); }
+          50% { transform: translateY(-8px); }
+        }
+      `}</style>
     </div>
   )
 }

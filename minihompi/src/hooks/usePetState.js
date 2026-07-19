@@ -2,13 +2,14 @@ import { useCallback, useEffect, useMemo, useState } from 'react'
 import { supabase, isSupabaseConfigured } from '../lib/supabaseClient.js'
 
 const DECAY_PER_HOUR = { hunger: 8, cleanliness: 6, happiness: 5 }
-const STAGE_THRESHOLDS = { hatchling: 5, grown: 20 }
+const STAGE_THRESHOLDS = { hatchling: 5, grown: 20, sparkle: 50 }
 
 function clamp(n) {
   return Math.max(0, Math.min(100, Math.round(n)))
 }
 
 function stageForCareCount(count) {
+  if (count >= STAGE_THRESHOLDS.sparkle) return 'sparkle'
   if (count >= STAGE_THRESHOLDS.grown) return 'grown'
   if (count >= STAGE_THRESHOLDS.hatchling) return 'hatchling'
   return 'egg'
@@ -24,7 +25,7 @@ function applyDecay(state) {
   }
 }
 
-const DEFAULT_STATE = { id: 1, stage: 'egg', hunger: 80, cleanliness: 80, happiness: 80, care_count: 0, equipped_outfit_id: null, last_tick_at: new Date().toISOString() }
+const DEFAULT_STATE = { id: 1, stage: 'egg', hunger: 80, cleanliness: 80, happiness: 80, care_count: 0, equipped_outfit_id: null, skin: 'mascot', last_tick_at: new Date().toISOString() }
 
 export function usePetState() {
   const [rawState, setRawState] = useState(DEFAULT_STATE)
@@ -63,7 +64,7 @@ export function usePetState() {
       await supabase.from('pet_state').update({
         stage: next.stage, hunger: next.hunger, cleanliness: next.cleanliness,
         happiness: next.happiness, care_count: next.care_count, equipped_outfit_id: next.equipped_outfit_id,
-        last_tick_at: next.last_tick_at,
+        skin: next.skin, last_tick_at: next.last_tick_at,
       }).eq('id', 1)
     }
   }, [liveState])
@@ -99,5 +100,9 @@ export function usePetState() {
     await persist({ equipped_outfit_id: invItem ? invItem.item_id : null })
   }, [persist])
 
-  return { state: liveState, loading, catalog, inventory, buyItem, useItem, equipOutfit }
+  const setSkin = useCallback(async (skin) => {
+    await persist({ skin })
+  }, [persist])
+
+  return { state: liveState, loading, catalog, inventory, buyItem, useItem, equipOutfit, setSkin }
 }

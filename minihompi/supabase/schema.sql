@@ -102,7 +102,7 @@ create table if not exists missions_log (
 -- =========================================================
 create table if not exists miniroom_catalog (
   id bigint generated always as identity primary key,
-  name text not null,
+  name text not null unique,
   image_url text,
   price int not null default 0,
   category text default 'furniture'
@@ -130,12 +130,13 @@ create table if not exists miniroom_layout (
 -- =========================================================
 create table if not exists pet_state (
   id int primary key default 1,
-  stage text not null default 'egg', -- egg | hatchling | grown
+  stage text not null default 'egg', -- egg | hatchling | grown | sparkle
   hunger int not null default 80,
   cleanliness int not null default 80,
   happiness int not null default 80,
   care_count int not null default 0,
   equipped_outfit_id bigint,
+  skin text not null default 'mascot', -- mascot | blob
   last_tick_at timestamptz default now(),
   constraint single_row_pet check (id = 1)
 );
@@ -143,7 +144,7 @@ insert into pet_state (id) values (1) on conflict (id) do nothing;
 
 create table if not exists pet_catalog (
   id bigint generated always as identity primary key,
-  name text not null,
+  name text not null unique,
   type text not null, -- food | outfit | toy
   image_url text,
   price int not null default 0,
@@ -226,14 +227,39 @@ insert into miniroom_catalog (name, image_url, price, category) values
   ('책상 세트', null, 40, 'furniture'),
   ('곰인형', null, 15, 'deco'),
   ('작은 어항', null, 25, 'deco'),
-  ('러그', null, 20, 'floor')
-on conflict do nothing;
+  ('러그', null, 20, 'floor'),
+  ('핑크 소파', null, 45, 'furniture'),
+  ('2단 침대', null, 50, 'furniture'),
+  ('책장', null, 35, 'furniture'),
+  ('TV', null, 40, 'furniture'),
+  ('컴퓨터 책상', null, 45, 'furniture'),
+  ('피아노', null, 55, 'furniture'),
+  ('옷장', null, 42, 'furniture'),
+  ('스탠드 조명', null, 18, 'deco'),
+  ('액자', null, 12, 'deco'),
+  ('꽃병', null, 15, 'deco'),
+  ('별 조명 가랜드', null, 20, 'deco'),
+  ('캐노피 커튼', null, 28, 'deco'),
+  ('장난감 상자', null, 16, 'deco'),
+  ('카펫(하트무늬)', null, 22, 'floor')
+on conflict (name) do nothing;
 
 insert into pet_catalog (name, type, image_url, price, effect) values
   ('사과', 'food', null, 5, '{"hunger": 20}'),
   ('간식바', 'food', null, 8, '{"hunger": 35}'),
+  ('초코케이크', 'food', null, 12, '{"hunger": 40, "happiness": 10}'),
+  ('주스', 'food', null, 6, '{"hunger": 15}'),
+  ('피자', 'food', null, 15, '{"hunger": 45}'),
   ('비누방울', 'toy', null, 6, '{"cleanliness": 25}'),
+  ('샴푸', 'toy', null, 7, '{"cleanliness": 30}'),
   ('공놀이', 'toy', null, 6, '{"happiness": 25}'),
+  ('훌라후프', 'toy', null, 10, '{"happiness": 20}'),
+  ('그림책', 'toy', null, 8, '{"happiness": 15}'),
   ('노란 리본', 'outfit', null, 20, '{}'),
-  ('별무늬 모자', 'outfit', null, 25, '{}')
-on conflict do nothing;
+  ('별무늬 모자', 'outfit', null, 25, '{}'),
+  ('분홍 원피스', 'outfit', null, 22, '{}'),
+  ('마법사 모자', 'outfit', null, 24, '{}'),
+  ('왕관', 'outfit', null, 30, '{}'),
+  ('안경', 'outfit', null, 15, '{}'),
+  ('나비 날개', 'outfit', null, 26, '{}')
+on conflict (name) do nothing;

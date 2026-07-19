@@ -1,6 +1,6 @@
 import { useRef, useState } from 'react'
 import DraggableItem from './DraggableItem.jsx'
-import EmptyState from '../common/EmptyState.jsx'
+import RoomBackdrop from './RoomBackdrop.jsx'
 
 export default function RoomCanvas({ placedItems, onUpdatePosition, onRemove }) {
   const canvasRef = useRef(null)
@@ -12,11 +12,12 @@ export default function RoomCanvas({ placedItems, onUpdatePosition, onRemove }) 
         ref={canvasRef}
         style={{
           position: 'relative', width: '100%', aspectRatio: '4 / 5', borderRadius: 18,
-          background: 'linear-gradient(to bottom, #fff3e0 0%, #fff3e0 65%, #e8d4b8 65%, #e8d4b8 100%)',
-          border: '3px solid var(--color-peach)', overflow: 'hidden',
+          overflow: 'hidden', boxShadow: '0 6px 18px rgba(91,70,54,0.18)',
+          border: '3px solid #c9a877',
         }}
         onClick={() => setSelectedId(null)}
       >
+        <RoomBackdrop />
         {placedItems.map((p) => (
           <DraggableItem
             key={p.inventory_id}

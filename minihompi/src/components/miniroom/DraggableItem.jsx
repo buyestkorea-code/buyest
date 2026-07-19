@@ -17,11 +17,12 @@ export default function DraggableItem({ placed, canvasRef, onDragEnd, onTap, sel
         top: `${placed.y}%`,
         translateX: '-50%',
         translateY: '-50%',
-        fontSize: 40,
         touchAction: 'none',
-        filter: selected ? 'drop-shadow(0 0 6px #ff9fc7)' : 'none',
         cursor: 'grab',
         userSelect: 'none',
+        display: 'flex',
+        flexDirection: 'column',
+        alignItems: 'center',
       }}
       onTap={() => onTap(placed.inventory_id)}
       onDragEnd={(e, info) => {
@@ -34,7 +35,10 @@ export default function DraggableItem({ placed, canvasRef, onDragEnd, onTap, sel
         onDragEnd(placed.inventory_id, x, y)
       }}
     >
-      {itemEmoji(item)}
+      <span style={{ fontSize: 44, filter: selected ? 'drop-shadow(0 0 6px #ff9fc7)' : 'drop-shadow(0 2px 2px rgba(0,0,0,0.2))' }}>
+        {itemEmoji(item)}
+      </span>
+      <span style={{ width: 26, height: 8, borderRadius: '50%', background: 'rgba(0,0,0,0.18)', marginTop: -4, filter: 'blur(1px)' }} />
     </motion.div>
   )
 }

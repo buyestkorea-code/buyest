@@ -6,10 +6,11 @@ import GaugeBar from '../components/pet/GaugeBar.jsx'
 import PetActionRow from '../components/pet/PetActionRow.jsx'
 import ClosetPicker from '../components/pet/ClosetPicker.jsx'
 import PetShop from '../components/pet/PetShop.jsx'
+import PetSkinPicker from '../components/pet/PetSkinPicker.jsx'
 import LoadingScreen from '../components/common/LoadingScreen.jsx'
 
 export default function PetPage() {
-  const { state, loading, catalog, inventory, buyItem, useItem, equipOutfit } = usePetState()
+  const { state, loading, catalog, inventory, buyItem, useItem, equipOutfit, setSkin } = usePetState()
   const { stats, spend } = usePoints()
   const [tab, setTab] = useState('care')
 
@@ -47,6 +48,7 @@ export default function PetPage() {
           <PetActionRow label="씻기기" emoji="🛁" effectKey="cleanliness" inventory={inventory} onUse={useItem} />
           <PetActionRow label="놀아주기" emoji="🎾" effectKey="happiness" inventory={inventory} onUse={useItem} />
           <ClosetPicker inventory={inventory} equippedOutfitId={state.equipped_outfit_id} onEquip={equipOutfit} />
+          <PetSkinPicker skin={state.skin} onSelect={setSkin} />
         </div>
       ) : (
         <PetShop catalog={catalog} currentPoints={stats.current_points} onBuy={handleBuy} />
