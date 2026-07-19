@@ -202,6 +202,23 @@ begin
 end $$;
 
 -- =========================================================
+-- Storage 버킷: photos, avatars, doodles (모두 공개 버킷)
+-- 대시보드에서 수동으로 만들어도 되지만, SQL로 한 번에 생성합니다.
+-- =========================================================
+insert into storage.buckets (id, name, public)
+values
+  ('photos', 'photos', true),
+  ('avatars', 'avatars', true),
+  ('doodles', 'doodles', true)
+on conflict (id) do nothing;
+
+drop policy if exists "public_all_objects" on storage.objects;
+create policy "public_all_objects" on storage.objects
+  for all
+  using (bucket_id in ('photos', 'avatars', 'doodles'))
+  with check (bucket_id in ('photos', 'avatars', 'doodles'));
+
+-- =========================================================
 -- 시드 데이터: 미니룸/펫 상점 기본 아이템
 -- =========================================================
 insert into miniroom_catalog (name, image_url, price, category) values

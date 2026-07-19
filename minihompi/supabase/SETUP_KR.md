@@ -24,11 +24,24 @@
 4. "Success" 라고 뜨면 완료! (왼쪽 **Table Editor** 메뉴에서 표들이 생긴 걸 확인할 수 있어요)
 
 ## 4. Storage 버킷 만들기 (사진 저장용)
-1. 왼쪽 메뉴 **Storage** 클릭
-2. "New bucket" 으로 아래 3개를 각각 만들기 (모두 **Public bucket** 체크 ✅)
-   - `photos` (사진첩 사진)
-   - `avatars` (대문 배경/프로필 사진)
-   - `doodles` (그림일기)
+`schema.sql` 을 실행했다면 이미 자동으로 만들어져 있습니다 (아래 내용이 파일 안에 포함되어 있어요).
+직접 확인하려면 왼쪽 메뉴 **Storage** 에서 `photos`, `avatars`, `doodles` 3개 버킷이 보이는지 확인하세요.
+
+만약 안 보인다면 SQL Editor 에서 아래를 실행하세요.
+```sql
+insert into storage.buckets (id, name, public)
+values
+  ('photos', 'photos', true),
+  ('avatars', 'avatars', true),
+  ('doodles', 'doodles', true)
+on conflict (id) do nothing;
+
+drop policy if exists "public_all_objects" on storage.objects;
+create policy "public_all_objects" on storage.objects
+  for all
+  using (bucket_id in ('photos', 'avatars', 'doodles'))
+  with check (bucket_id in ('photos', 'avatars', 'doodles'));
+```
 
 ## 5. 값 입력하기
 ### 로컬(내 컴퓨터)에서 개발할 때
