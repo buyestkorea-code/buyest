@@ -2,8 +2,19 @@
 -- SQL Editor 에서 새 쿼리로 실행하세요.
 
 -- 기존 테이블에 유니크 제약 추가 (중복 방지)
-alter table miniroom_catalog add constraint if not exists miniroom_catalog_name_key unique (name);
-alter table pet_catalog add constraint if not exists pet_catalog_name_key unique (name);
+do $$
+begin
+  if not exists (select 1 from pg_constraint where conname = 'miniroom_catalog_name_key') then
+    alter table miniroom_catalog add constraint miniroom_catalog_name_key unique (name);
+  end if;
+end $$;
+
+do $$
+begin
+  if not exists (select 1 from pg_constraint where conname = 'pet_catalog_name_key') then
+    alter table pet_catalog add constraint pet_catalog_name_key unique (name);
+  end if;
+end $$;
 
 -- 캐릭터 스킨 컬럼 추가
 alter table pet_state add column if not exists skin text not null default 'mascot';
