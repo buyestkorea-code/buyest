@@ -1,0 +1,40 @@
+import { useState } from 'react'
+import Game2048 from '../components/games/Game2048.jsx'
+import MemoryGame from '../components/games/MemoryGame.jsx'
+import DodgeGame from '../components/games/DodgeGame.jsx'
+
+const GAMES = [
+  { key: '2048', emoji: '🔢', label: '2048', desc: '같은 숫자를 합쳐서 2048을 만들어보세요' },
+  { key: 'memory', emoji: '🃏', label: '카드 짝맞추기', desc: '카드를 뒤집어서 같은 그림을 찾아보세요' },
+  { key: 'dodge', emoji: '🏃', label: '장애물 피하기', desc: '탭해서 점프! 장애물을 피해 오래 버텨보세요' },
+]
+
+export default function GamesPage() {
+  const [activeGame, setActiveGame] = useState(null)
+
+  if (activeGame === '2048') return <Game2048 onBack={() => setActiveGame(null)} />
+  if (activeGame === 'memory') return <MemoryGame onBack={() => setActiveGame(null)} />
+  if (activeGame === 'dodge') return <DodgeGame onBack={() => setActiveGame(null)} />
+
+  return (
+    <div className="page stack">
+      <h2 className="page-title">🎮 미니게임</h2>
+      <div className="stack">
+        {GAMES.map((g) => (
+          <button
+            key={g.key}
+            className="card row"
+            style={{ textAlign: 'left', border: 'none', width: '100%', cursor: 'pointer' }}
+            onClick={() => setActiveGame(g.key)}
+          >
+            <span style={{ fontSize: 36 }}>{g.emoji}</span>
+            <div>
+              <div style={{ fontWeight: 800, fontSize: 16 }}>{g.label}</div>
+              <div style={{ fontSize: 12, opacity: 0.6 }}>{g.desc}</div>
+            </div>
+          </button>
+        ))}
+      </div>
+    </div>
+  )
+}

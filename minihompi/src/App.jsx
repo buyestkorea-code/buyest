@@ -13,6 +13,7 @@ import PetPage from './pages/PetPage.jsx'
 import MemoPage from './pages/MemoPage.jsx'
 import ProfilePage from './pages/ProfilePage.jsx'
 import GuestbookPage from './pages/GuestbookPage.jsx'
+import GamesPage from './pages/GamesPage.jsx'
 
 function SupabaseWarningBanner() {
   if (isSupabaseConfigured) return null
@@ -39,6 +40,7 @@ export default function App() {
             <Route path="/memo" element={<MemoPage />} />
             <Route path="/profile" element={<ProfilePage />} />
             <Route path="/guestbook" element={<GuestbookPage />} />
+            <Route path="/games" element={<GamesPage />} />
           </Routes>
           <BottomNav />
           <LevelUpEffect />
