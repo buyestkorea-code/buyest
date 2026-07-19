@@ -1,4 +1,4 @@
-import { itemEmoji } from '../../utils/itemEmoji.js'
+import ItemIcon from './ItemIcon.jsx'
 
 export default function ItemShop({ catalog, currentPoints, onBuy }) {
   return (
@@ -9,7 +9,7 @@ export default function ItemShop({ catalog, currentPoints, onBuy }) {
           const affordable = currentPoints >= item.price
           return (
             <div key={item.id} className="stack" style={{ alignItems: 'center', background: '#fff', borderRadius: 12, padding: 8, gap: 4 }}>
-              <span style={{ fontSize: 30 }}>{itemEmoji(item)}</span>
+              <ItemIcon item={item} size={30} />
               <span style={{ fontSize: 11, fontWeight: 700, textAlign: 'center' }}>{item.name}</span>
               <span className="pill" style={{ fontSize: 11 }}>{item.price}P</span>
               <button className="btn" style={{ fontSize: 11, padding: '6px 8px', minHeight: 34 }} disabled={!affordable} onClick={() => onBuy(item)}>

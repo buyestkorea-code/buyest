@@ -1,8 +1,9 @@
 import { useRef, useState } from 'react'
 import DraggableItem from './DraggableItem.jsx'
 import RoomBackdrop from './RoomBackdrop.jsx'
+import RoomCharacter from './RoomCharacter.jsx'
 
-export default function RoomCanvas({ placedItems, onUpdatePosition, onRemove }) {
+export default function RoomCanvas({ placedItems, onUpdatePosition, onRemove, character }) {
   const canvasRef = useRef(null)
   const [selectedId, setSelectedId] = useState(null)
 
@@ -18,6 +19,7 @@ export default function RoomCanvas({ placedItems, onUpdatePosition, onRemove }) 
         onClick={() => setSelectedId(null)}
       >
         <RoomBackdrop />
+        {character && <RoomCharacter {...character} />}
         {placedItems.map((p) => (
           <DraggableItem
             key={p.inventory_id}

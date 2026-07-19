@@ -1,13 +1,7 @@
 import Mascot from '../common/Mascot.jsx'
 import BlobPet from './BlobPet.jsx'
-
-function moodFromGauges(state) {
-  const avg = (state.hunger + state.cleanliness + state.happiness) / 3
-  if (avg >= 85) return 'sparkle'
-  if (avg >= 55) return 'happy'
-  if (avg >= 30) return 'neutral'
-  return 'sad'
-}
+import OutfitOverlay from './OutfitOverlay.jsx'
+import { moodFromGauges } from '../../utils/petMood.js'
 
 function statusMessage(state) {
   const lowest = Math.min(state.hunger, state.cleanliness, state.happiness)
@@ -50,8 +44,9 @@ export default function PetStage({ state, outfitName }) {
       <div className="pill" style={{ position: 'relative' }}>
         {statusMessage(state)}
       </div>
-      <div style={{ position: 'relative', animation: 'pet-float 3s ease-in-out infinite' }}>
+      <div style={{ position: 'relative', width: 140, height: 140, animation: 'pet-float 3s ease-in-out infinite' }}>
         <CharacterComponent size={140} mood={mood} />
+        <OutfitOverlay outfitName={outfitName} />
         {isSparkleStage && (
           <span style={{ position: 'absolute', top: -10, right: -10, fontSize: 28 }}>✨</span>
         )}

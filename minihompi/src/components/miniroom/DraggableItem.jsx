@@ -1,5 +1,5 @@
 import { motion } from 'framer-motion'
-import { itemEmoji } from '../../utils/itemEmoji.js'
+import ItemIcon from './ItemIcon.jsx'
 
 export default function DraggableItem({ placed, canvasRef, onDragEnd, onTap, selected }) {
   const item = placed.inventory?.item
@@ -35,8 +35,8 @@ export default function DraggableItem({ placed, canvasRef, onDragEnd, onTap, sel
         onDragEnd(placed.inventory_id, x, y)
       }}
     >
-      <span style={{ fontSize: 44, filter: selected ? 'drop-shadow(0 0 6px #ff9fc7)' : 'drop-shadow(0 2px 2px rgba(0,0,0,0.2))' }}>
-        {itemEmoji(item)}
+      <span style={{ filter: selected ? 'drop-shadow(0 0 6px #ff9fc7)' : 'drop-shadow(0 2px 2px rgba(0,0,0,0.2))', display: 'inline-flex' }}>
+        <ItemIcon item={item} size={44} />
       </span>
       <span style={{ width: 26, height: 8, borderRadius: '50%', background: 'rgba(0,0,0,0.18)', marginTop: -4, filter: 'blur(1px)' }} />
     </motion.div>
