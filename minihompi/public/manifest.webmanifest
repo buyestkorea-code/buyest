@@ -1,0 +1,16 @@
+{
+  "name": "승목이의 비밀기지",
+  "short_name": "승목이 미니홈피",
+  "description": "승목이의 미니홈피 - 일기, 사진첩, 미니룸, 캐릭터 키우기",
+  "start_url": "/buyest/",
+  "scope": "/buyest/",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#fff3d6",
+  "theme_color": "#ffd6e8",
+  "icons": [
+    { "src": "/buyest/icons/icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
+    { "src": "/buyest/icons/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
+    { "src": "/buyest/icons/maskable-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+  ]
+}
