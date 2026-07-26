@@ -1,5 +1,7 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
 import { usePoints } from '../../contexts/PointsContext.jsx'
+import { useGameReaction } from '../../hooks/useGameReaction.js'
+import GameReactionCard from './GameReactionCard.jsx'
 
 const SIZE = 4
 
@@ -108,15 +110,18 @@ export default function Game2048({ onBack }) {
   const [gameOver, setGameOver] = useState(false)
   const [won, setWon] = useState(false)
   const { award } = usePoints()
+  const { reaction, react } = useGameReaction()
   const awardedRef = useRef(false)
   const touchStart = useRef(null)
 
   useEffect(() => {
     if (gameOver && !awardedRef.current) {
       awardedRef.current = true
-      award(rewardForTile(maxTile(board)), '2048 게임', 'game_2048')
+      const reward = rewardForTile(maxTile(board))
+      award(reward, '2048 게임', 'game_2048')
+      react(reward / 30)
     }
-  }, [gameOver, board, award])
+  }, [gameOver, board, award, react])
 
   const handleMove = useCallback((direction) => {
     if (gameOver) return
@@ -196,6 +201,7 @@ export default function Game2048({ onBack }) {
       </div>
 
       <p style={{ fontSize: 12, opacity: 0.6, textAlign: 'center' }}>화면을 좌우/위아래로 스와이프해서 타일을 움직여보세요</p>
+      {gameOver && <GameReactionCard reaction={reaction} />}
     </div>
   )
 }

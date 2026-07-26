@@ -1,5 +1,7 @@
 import { useEffect, useRef, useState } from 'react'
 import { usePoints } from '../../contexts/PointsContext.jsx'
+import { useGameReaction } from '../../hooks/useGameReaction.js'
+import GameReactionCard from './GameReactionCard.jsx'
 
 const WIDTH = 320
 const HEIGHT = 200
@@ -21,6 +23,7 @@ export default function DodgeGame({ onBack }) {
   const canvasRef = useRef(null)
   const rafRef = useRef(null)
   const { award } = usePoints()
+  const { reaction, react } = useGameReaction()
   const awardedRef = useRef(false)
   const [score, setScore] = useState(0)
   const [gameOver, setGameOver] = useState(false)
@@ -130,8 +133,9 @@ export default function DodgeGame({ onBack }) {
     if (gameOver && !awardedRef.current) {
       awardedRef.current = true
       award(rewardForScore(score), '장애물 피하기 게임', 'game_dodge')
+      react(rewardForScore(score) / 25)
     }
-  }, [gameOver, score, award])
+  }, [gameOver, score, award, react])
 
   function handleTap() {
     if (!started || gameOver) return
@@ -169,6 +173,7 @@ export default function DodgeGame({ onBack }) {
       </div>
 
       <p style={{ fontSize: 12, opacity: 0.6, textAlign: 'center' }}>화면을 탭하면 점프해요</p>
+      {gameOver && <GameReactionCard reaction={reaction} />}
     </div>
   )
 }

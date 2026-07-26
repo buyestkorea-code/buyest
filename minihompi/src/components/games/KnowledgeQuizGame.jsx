@@ -1,6 +1,8 @@
 import { useRef, useState } from 'react'
 import { usePoints } from '../../contexts/PointsContext.jsx'
+import { useGameReaction } from '../../hooks/useGameReaction.js'
 import { QUIZ_CATEGORIES } from '../../data/knowledgeQuiz.js'
+import GameReactionCard from './GameReactionCard.jsx'
 
 function shuffle(arr) {
   const copy = [...arr]
@@ -23,6 +25,7 @@ function rewardForScore(score, total) {
 
 export default function KnowledgeQuizGame({ onBack }) {
   const { award } = usePoints()
+  const { reaction, react } = useGameReaction()
   const [category, setCategory] = useState(null)
   const [questions, setQuestions] = useState(null)
   const [index, setIndex] = useState(0)
@@ -52,7 +55,9 @@ export default function KnowledgeQuizGame({ onBack }) {
         setFinished(true)
         if (!awardedRef.current) {
           awardedRef.current = true
-          award(rewardForScore(score + (correct ? 1 : 0), questions.length), `상식 퀴즈 (${category.label})`, 'game_knowledge')
+          const finalScore = score + (correct ? 1 : 0)
+          award(rewardForScore(finalScore, questions.length), `상식 퀴즈 (${category.label})`, 'game_knowledge')
+          react(finalScore / questions.length)
         }
       } else {
         setIndex((i) => i + 1)
@@ -115,6 +120,7 @@ export default function KnowledgeQuizGame({ onBack }) {
             <button className="btn btn-ghost" onClick={() => setCategory(null)}>다른 카테고리</button>
             <button className="btn" onClick={() => startCategory(category)}>다시하기</button>
           </div>
+          <GameReactionCard reaction={reaction} />
         </div>
       )}
     </div>

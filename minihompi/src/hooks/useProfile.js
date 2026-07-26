@@ -14,6 +14,7 @@ const DEFAULT_PROFILE = {
   title_text: '승목이의 비밀기지',
   mood_emoji: '😊',
   theme_skin: 'pink',
+  guestbook_seen_at: null,
 }
 
 export function useProfile() {

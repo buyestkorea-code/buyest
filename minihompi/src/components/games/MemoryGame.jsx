@@ -1,6 +1,8 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { usePoints } from '../../contexts/PointsContext.jsx'
 import { useGameProgress } from '../../hooks/useGameProgress.js'
+import { useGameReaction } from '../../hooks/useGameReaction.js'
+import GameReactionCard from './GameReactionCard.jsx'
 import LoadingScreen from '../common/LoadingScreen.jsx'
 
 const EMOJI_POOL = ['🍎', '🍓', '🍇', '🍊', '🐶', '🐱', '🐰', '🐥', '🦋', '🌈', '🍭', '🎈']
@@ -28,6 +30,7 @@ export default function MemoryGame({ onBack }) {
   const [moves, setMoves] = useState(0)
   const [busy, setBusy] = useState(false)
   const { award } = usePoints()
+  const { reaction, react } = useGameReaction()
   const awardedRef = useRef(false)
 
   useEffect(() => {
@@ -43,8 +46,9 @@ export default function MemoryGame({ onBack }) {
       const efficiency = Math.min(1, pairs / Math.max(moves, 1))
       const reward = Math.round(8 + efficiency * 12 + stage * 2)
       award(reward, `카드 짝맞추기 게임 (스테이지 ${stage})`, 'game_memory')
+      react(efficiency)
     }
-  }, [complete, moves, award, pairs, stage])
+  }, [complete, moves, award, react, pairs, stage])
 
   function handleFlip(index) {
     if (busy || flipped.includes(index) || deck[index].matched) return
@@ -126,6 +130,7 @@ export default function MemoryGame({ onBack }) {
             <button className="btn btn-ghost" onClick={restart}>다시하기</button>
             {pairs < MAX_PAIRS && <button className="btn" onClick={nextStage}>다음 스테이지 ▶</button>}
           </div>
+          <GameReactionCard reaction={reaction} />
         </div>
       )}
     </div>

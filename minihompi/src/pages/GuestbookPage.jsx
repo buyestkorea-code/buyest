@@ -1,10 +1,14 @@
+import { useEffect } from 'react'
 import { useGuestbook } from '../hooks/useGuestbook.js'
+import { markGuestbookSeen } from '../lib/guestbookSeen.js'
 import GuestbookForm from '../components/guestbook/GuestbookForm.jsx'
 import GuestbookList from '../components/guestbook/GuestbookList.jsx'
 import LoadingScreen from '../components/common/LoadingScreen.jsx'
 
 export default function GuestbookPage() {
   const { entries, loading, addEntry, deleteEntry } = useGuestbook()
+
+  useEffect(() => { markGuestbookSeen() }, [])
 
   if (loading) return <LoadingScreen />
 

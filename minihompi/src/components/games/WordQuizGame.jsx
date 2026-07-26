@@ -1,8 +1,10 @@
 import { useMemo, useRef, useState } from 'react'
 import { useVocabWords } from '../../hooks/useVocabWords.js'
 import { usePoints } from '../../contexts/PointsContext.jsx'
+import { useGameReaction } from '../../hooks/useGameReaction.js'
 import { FALLBACK_WORDS } from '../../data/vocabWords.js'
 import LoadingScreen from '../common/LoadingScreen.jsx'
+import GameReactionCard from './GameReactionCard.jsx'
 
 const ROUND_LENGTH = 8
 
@@ -42,6 +44,7 @@ function rewardForScore(score) {
 export default function WordQuizGame({ onBack }) {
   const { words, loading } = useVocabWords()
   const { award } = usePoints()
+  const { reaction, react } = useGameReaction()
   const [mode, setMode] = useState(null)
   const [questions, setQuestions] = useState(null)
   const [index, setIndex] = useState(0)
@@ -83,8 +86,10 @@ export default function WordQuizGame({ onBack }) {
         setFinished(true)
         if (!awardedRef.current) {
           awardedRef.current = true
+          const finalScore = score + (correct ? 1 : 0)
           const modeLabel = MODES.find((m) => m.key === mode)?.label || '영어 단어 퀴즈'
-          award(rewardForScore(score + (correct ? 1 : 0)), `영어 단어 퀴즈 (${modeLabel})`, 'game_wordquiz')
+          award(rewardForScore(finalScore), `영어 단어 퀴즈 (${modeLabel})`, 'game_wordquiz')
+          react(finalScore / ROUND_LENGTH)
         }
       } else {
         setIndex((i) => i + 1)
@@ -154,6 +159,7 @@ export default function WordQuizGame({ onBack }) {
             <button className="btn btn-ghost" onClick={() => setMode(null)}>다른 모드</button>
             <button className="btn" onClick={() => start(mode)}>다시하기</button>
           </div>
+          <GameReactionCard reaction={reaction} />
         </div>
       )}
     </div>

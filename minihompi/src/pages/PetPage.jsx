@@ -1,12 +1,14 @@
 import { useState } from 'react'
 import { usePetState } from '../hooks/usePetState.js'
 import { usePoints } from '../contexts/PointsContext.jsx'
+import { itemEmoji } from '../utils/itemEmoji.js'
 import PetStage from '../components/pet/PetStage.jsx'
 import GaugeBar from '../components/pet/GaugeBar.jsx'
 import PetActionRow from '../components/pet/PetActionRow.jsx'
 import ClosetPicker from '../components/pet/ClosetPicker.jsx'
 import PetShop from '../components/pet/PetShop.jsx'
 import PetSkinPicker from '../components/pet/PetSkinPicker.jsx'
+import GachaBox from '../components/common/GachaBox.jsx'
 import LoadingScreen from '../components/common/LoadingScreen.jsx'
 
 export default function PetPage() {
@@ -51,7 +53,17 @@ export default function PetPage() {
           <PetSkinPicker skin={state.skin} onSelect={setSkin} />
         </div>
       ) : (
-        <PetShop catalog={catalog} currentPoints={stats.current_points} onBuy={handleBuy} />
+        <div className="stack">
+          <GachaBox
+            catalog={catalog}
+            ownedIds={new Set(inventory.map((inv) => inv.item_id))}
+            currentPoints={stats.current_points}
+            onSpend={spend}
+            onAcquire={(item) => buyItem(item)}
+            renderIcon={(item) => itemEmoji(item)}
+          />
+          <PetShop catalog={catalog} currentPoints={stats.current_points} onBuy={handleBuy} />
+        </div>
       )}
     </div>
   )

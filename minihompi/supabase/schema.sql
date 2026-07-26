@@ -19,6 +19,7 @@ create table if not exists profile (
   title_text text default '승목이의 비밀기지',
   mood_emoji text default '😊',
   theme_skin text default 'pink',
+  guestbook_seen_at timestamptz default now(),
   updated_at timestamptz default now(),
   constraint single_row check (id = 1)
 );

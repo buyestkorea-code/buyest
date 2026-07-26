@@ -6,10 +6,12 @@ import { moodFromGauges } from '../utils/petMood.js'
 import RoomCanvas from '../components/miniroom/RoomCanvas.jsx'
 import StorageShelf from '../components/miniroom/StorageShelf.jsx'
 import ItemShop from '../components/miniroom/ItemShop.jsx'
+import ItemIcon from '../components/miniroom/ItemIcon.jsx'
+import GachaBox from '../components/common/GachaBox.jsx'
 import LoadingScreen from '../components/common/LoadingScreen.jsx'
 
 export default function MiniRoomPage() {
-  const { catalog, loading, buyItem, placeItem, updatePosition, removeFromRoom, storageItems, placedItems } = useMiniRoom()
+  const { catalog, inventory, loading, buyItem, placeItem, updatePosition, removeFromRoom, storageItems, placedItems } = useMiniRoom()
   const { state: petState, inventory: petInventory } = usePetState()
   const { stats, spend } = usePoints()
   const [tab, setTab] = useState('room')
@@ -45,7 +47,17 @@ export default function MiniRoomPage() {
           <StorageShelf storageItems={storageItems} onPlace={placeItem} />
         </div>
       ) : (
-        <ItemShop catalog={catalog} currentPoints={stats.current_points} onBuy={handleBuy} />
+        <div className="stack">
+          <GachaBox
+            catalog={catalog}
+            ownedIds={new Set(inventory.map((inv) => inv.item_id))}
+            currentPoints={stats.current_points}
+            onSpend={spend}
+            onAcquire={(item) => buyItem(item.id)}
+            renderIcon={(item) => <ItemIcon item={item} size={30} />}
+          />
+          <ItemShop catalog={catalog} currentPoints={stats.current_points} onBuy={handleBuy} />
+        </div>
       )}
     </div>
   )
