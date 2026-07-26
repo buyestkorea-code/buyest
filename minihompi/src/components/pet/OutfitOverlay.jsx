@@ -7,6 +7,14 @@ const OUTFIT_STYLE = {
   '안경': { emoji: '👓', top: '46%', left: '50%', scale: 0.46 },
   '나비 날개': { emoji: '🦋', top: '30%', left: '50%', scale: 0.9, mirrored: true },
   '분홍 원피스': { emoji: '👗', top: '68%', left: '50%', scale: 0.5, behind: true },
+  '멜빵바지': { emoji: '👖', top: '68%', left: '50%', scale: 0.5, behind: true },
+  '스카프': { emoji: '🧣', top: '58%', left: '50%', scale: 0.4 },
+  '✨ 다이아몬드 왕관': { emoji: '👑', top: '-18%', left: '50%', scale: 0.46 },
+  '✨ 용 날개 옷': { emoji: '🐉', top: '30%', left: '50%', scale: 0.95, mirrored: true },
+  '✨ 황금 옷': { emoji: '🥇', top: '55%', left: '50%', scale: 0.42 },
+  '✨ 유니콘 뿔': { emoji: '🦄', top: '-20%', left: '50%', scale: 0.36 },
+  '✨ 마법사 로브': { emoji: '🧙', top: '68%', left: '50%', scale: 0.55, behind: true },
+  '✨ 슈퍼히어로 망토': { emoji: '🦸', top: '70%', left: '50%', scale: 0.55, behind: true },
 }
 
 export default function OutfitOverlay({ outfitName }) {
