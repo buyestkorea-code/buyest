@@ -16,6 +16,7 @@ export const MENU_ITEMS = [
   { to: '/pet', emoji: '🐣', label: '캐릭터 키우기' },
   { to: '/memo', emoji: '📝', label: '메모장' },
   { to: '/games', emoji: '🎮', label: '미니게임' },
+  { to: '/translate', emoji: '🌐', label: '번역기' },
   { to: '/guestbook', emoji: '💌', label: '방명록' },
   { to: '/profile', emoji: '🪪', label: '프로필' },
 ]

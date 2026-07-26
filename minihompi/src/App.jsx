@@ -14,6 +14,7 @@ import MemoPage from './pages/MemoPage.jsx'
 import ProfilePage from './pages/ProfilePage.jsx'
 import GuestbookPage from './pages/GuestbookPage.jsx'
 import GamesPage from './pages/GamesPage.jsx'
+import TranslatePage from './pages/TranslatePage.jsx'
 
 function SupabaseWarningBanner() {
   if (isSupabaseConfigured) return null
@@ -41,6 +42,7 @@ export default function App() {
             <Route path="/profile" element={<ProfilePage />} />
             <Route path="/guestbook" element={<GuestbookPage />} />
             <Route path="/games" element={<GamesPage />} />
+            <Route path="/translate" element={<TranslatePage />} />
           </Routes>
           <BottomNav />
           <LevelUpEffect />

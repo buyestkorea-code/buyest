@@ -2,11 +2,13 @@ import { useState } from 'react'
 import Game2048 from '../components/games/Game2048.jsx'
 import MemoryGame from '../components/games/MemoryGame.jsx'
 import DodgeGame from '../components/games/DodgeGame.jsx'
+import WordQuizGame from '../components/games/WordQuizGame.jsx'
 
 const GAMES = [
   { key: '2048', emoji: '🔢', label: '2048', desc: '같은 숫자를 합쳐서 2048을 만들어보세요' },
   { key: 'memory', emoji: '🃏', label: '카드 짝맞추기', desc: '카드를 뒤집어서 같은 그림을 찾아보세요' },
   { key: 'dodge', emoji: '🏃', label: '장애물 피하기', desc: '탭해서 점프! 장애물을 피해 오래 버텨보세요' },
+  { key: 'wordquiz', emoji: '📚', label: '영어 단어 퀴즈', desc: '번역기에서 배운 단어로 퀴즈를 풀어보세요' },
 ]
 
 export default function GamesPage() {
@@ -15,6 +17,7 @@ export default function GamesPage() {
   if (activeGame === '2048') return <Game2048 onBack={() => setActiveGame(null)} />
   if (activeGame === 'memory') return <MemoryGame onBack={() => setActiveGame(null)} />
   if (activeGame === 'dodge') return <DodgeGame onBack={() => setActiveGame(null)} />
+  if (activeGame === 'wordquiz') return <WordQuizGame onBack={() => setActiveGame(null)} />
 
   return (
     <div className="page stack">

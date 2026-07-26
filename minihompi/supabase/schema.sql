@@ -181,6 +181,22 @@ create table if not exists guestbook (
 );
 
 -- =========================================================
+-- 10. 번역 단어장 (번역기에서 찾아본 단어 저장, 영어 퀴즈에 재사용)
+-- =========================================================
+create table if not exists vocab_words (
+  id bigint generated always as identity primary key,
+  word_en text not null unique,
+  word_ko text not null,
+  source text default 'text', -- text | camera
+  created_at timestamptz default now()
+);
+
+create table if not exists game_progress (
+  game_key text primary key,
+  level int not null default 1
+);
+
+-- =========================================================
 -- RLS: 전체 공개 읽기/쓰기 허용 (가족용 개인 사이트)
 -- =========================================================
 do $$
@@ -193,7 +209,7 @@ begin
       'diary_entries', 'albums', 'photos', 'missions_log',
       'miniroom_catalog', 'miniroom_inventory', 'miniroom_layout',
       'pet_state', 'pet_catalog', 'pet_inventory',
-      'memos', 'guestbook'
+      'memos', 'guestbook', 'vocab_words', 'game_progress'
     ])
   loop
     execute format('alter table %I enable row level security;', t);
@@ -252,7 +268,17 @@ insert into miniroom_catalog (name, image_url, price, category) values
   ('무드등', null, 18, 'deco'),
   ('텐트', null, 38, 'furniture'),
   ('트램폴린', null, 40, 'furniture'),
-  ('그네', null, 36, 'furniture')
+  ('그네', null, 36, 'furniture'),
+  ('크리스마스 트리', null, 26, 'deco'),
+  ('눈사람 인형', null, 18, 'deco'),
+  ('벚꽃 화분', null, 16, 'deco'),
+  ('파티 풍선', null, 14, 'deco'),
+  ('파티 가랜드', null, 15, 'deco'),
+  ('생일 케이크', null, 15, 'deco'),
+  ('책가방', null, 16, 'deco'),
+  ('칠판', null, 28, 'furniture'),
+  ('지구본', null, 20, 'deco'),
+  ('수족관', null, 45, 'furniture')
 on conflict (name) do nothing;
 
 insert into pet_catalog (name, type, image_url, price, effect) values
@@ -272,5 +298,11 @@ insert into pet_catalog (name, type, image_url, price, effect) values
   ('마법사 모자', 'outfit', null, 24, '{}'),
   ('왕관', 'outfit', null, 30, '{}'),
   ('안경', 'outfit', null, 15, '{}'),
-  ('나비 날개', 'outfit', null, 26, '{}')
+  ('나비 날개', 'outfit', null, 26, '{}'),
+  ('아이스크림', 'food', null, 10, '{"hunger": 10, "happiness": 15}'),
+  ('샐러드', 'food', null, 8, '{"hunger": 25}'),
+  ('축구공', 'toy', null, 9, '{"happiness": 22}'),
+  ('퍼즐', 'toy', null, 9, '{"happiness": 18}'),
+  ('멜빵바지', 'outfit', null, 20, '{}'),
+  ('스카프', 'outfit', null, 16, '{}')
 on conflict (name) do nothing;
