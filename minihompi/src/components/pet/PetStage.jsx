@@ -2,6 +2,7 @@ import Mascot from '../common/Mascot.jsx'
 import BlobPet from './BlobPet.jsx'
 import OutfitOverlay from './OutfitOverlay.jsx'
 import { moodFromGauges } from '../../utils/petMood.js'
+import { nextEvolutionHint } from '../../utils/petEvolution.js'
 
 function statusMessage(state) {
   const lowest = Math.min(state.hunger, state.cleanliness, state.happiness)
@@ -24,7 +25,7 @@ export default function PetStage({ state, outfitName }) {
     return (
       <div className="card stack" style={{ alignItems: 'center' }}>
         <span style={{ fontSize: 80, display: 'inline-block', animation: 'egg-wiggle 2.4s ease-in-out infinite' }}>🥚</span>
-        <p style={{ fontWeight: 700 }}>아직 알이에요! 잘 돌봐주면 곧 태어날 거예요.</p>
+        <p style={{ fontWeight: 700 }}>아직 알이에요! 시간이 지나거나 잘 돌봐주면 곧 태어날 거예요.</p>
         <style>{`
           @keyframes egg-wiggle {
             0%, 100% { transform: rotate(-4deg); }
@@ -55,6 +56,9 @@ export default function PetStage({ state, outfitName }) {
         {STAGE_LABEL[state.stage]}
         {outfitName ? ` · ${outfitName} 착용중` : ''}
       </p>
+      {!isSparkleStage && (
+        <p style={{ fontSize: 12, opacity: 0.6, textAlign: 'center' }}>{nextEvolutionHint(state)}</p>
+      )}
       <style>{`
         @keyframes pet-float {
           0%, 100% { transform: translateY(0); }

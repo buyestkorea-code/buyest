@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { useMiniRoom } from '../hooks/useMiniRoom.js'
+import { useMiniRoomTheme } from '../hooks/useMiniRoomTheme.js'
 import { usePetState } from '../hooks/usePetState.js'
 import { usePoints } from '../contexts/PointsContext.jsx'
 import { moodFromGauges } from '../utils/petMood.js'
@@ -7,11 +8,13 @@ import RoomCanvas from '../components/miniroom/RoomCanvas.jsx'
 import StorageShelf from '../components/miniroom/StorageShelf.jsx'
 import ItemShop from '../components/miniroom/ItemShop.jsx'
 import ItemIcon from '../components/miniroom/ItemIcon.jsx'
+import RoomThemePicker from '../components/miniroom/RoomThemePicker.jsx'
 import GachaBox from '../components/common/GachaBox.jsx'
 import LoadingScreen from '../components/common/LoadingScreen.jsx'
 
 export default function MiniRoomPage() {
-  const { catalog, inventory, loading, buyItem, placeItem, updatePosition, removeFromRoom, storageItems, placedItems } = useMiniRoom()
+  const { catalog, inventory, loading, buyItem, placeItem, updatePosition, rotateItem, bringToFront, sendToBack, removeFromRoom, storageItems, placedItems } = useMiniRoom()
+  const { theme, updateTheme } = useMiniRoomTheme()
   const { state: petState, inventory: petInventory } = usePetState()
   const { stats, spend } = usePoints()
   const [tab, setTab] = useState('room')
@@ -43,8 +46,19 @@ export default function MiniRoomPage() {
 
       {tab === 'room' ? (
         <div className="stack">
-          <RoomCanvas placedItems={placedItems} onUpdatePosition={updatePosition} onRemove={removeFromRoom} character={roomCharacter} />
+          <RoomCanvas
+            placedItems={placedItems}
+            onUpdatePosition={updatePosition}
+            onRotate={rotateItem}
+            onBringToFront={bringToFront}
+            onSendToBack={sendToBack}
+            onRemove={removeFromRoom}
+            character={roomCharacter}
+            wallpaper={theme.wallpaper}
+            floor={theme.floor}
+          />
           <StorageShelf storageItems={storageItems} onPlace={placeItem} />
+          <RoomThemePicker theme={theme} onChange={updateTheme} />
         </div>
       ) : (
         <div className="stack">

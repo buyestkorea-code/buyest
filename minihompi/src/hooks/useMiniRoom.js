@@ -42,6 +42,30 @@ export function useMiniRoom() {
     await supabase.from('miniroom_layout').update({ x, y }).eq('inventory_id', inventoryId)
   }, [])
 
+  const rotateItem = useCallback(async (inventoryId) => {
+    if (!isSupabaseConfigured) return
+    const current = layout.find((l) => l.inventory_id === inventoryId)
+    const nextRotation = ((current?.rotation || 0) + 45) % 360
+    setLayout((prev) => prev.map((l) => (l.inventory_id === inventoryId ? { ...l, rotation: nextRotation } : l)))
+    await supabase.from('miniroom_layout').update({ rotation: nextRotation }).eq('inventory_id', inventoryId)
+  }, [layout])
+
+  const bringToFront = useCallback(async (inventoryId) => {
+    if (!isSupabaseConfigured) return
+    const maxZ = Math.max(0, ...layout.map((l) => l.z_index || 0))
+    const nextZ = maxZ + 1
+    setLayout((prev) => prev.map((l) => (l.inventory_id === inventoryId ? { ...l, z_index: nextZ } : l)))
+    await supabase.from('miniroom_layout').update({ z_index: nextZ }).eq('inventory_id', inventoryId)
+  }, [layout])
+
+  const sendToBack = useCallback(async (inventoryId) => {
+    if (!isSupabaseConfigured) return
+    const minZ = Math.min(0, ...layout.map((l) => l.z_index || 0))
+    const nextZ = minZ - 1
+    setLayout((prev) => prev.map((l) => (l.inventory_id === inventoryId ? { ...l, z_index: nextZ } : l)))
+    await supabase.from('miniroom_layout').update({ z_index: nextZ }).eq('inventory_id', inventoryId)
+  }, [layout])
+
   const removeFromRoom = useCallback(async (inventoryId) => {
     if (!isSupabaseConfigured) return
     await supabase.from('miniroom_layout').delete().eq('inventory_id', inventoryId)
@@ -52,5 +76,5 @@ export function useMiniRoom() {
   const storageItems = inventory.filter((inv) => !placedIds.has(inv.id))
   const placedItems = layout.map((l) => ({ ...l, inventory: inventory.find((inv) => inv.id === l.inventory_id) })).filter((l) => l.inventory)
 
-  return { catalog, inventory, layout, loading, buyItem, placeItem, updatePosition, removeFromRoom, storageItems, placedItems }
+  return { catalog, inventory, layout, loading, buyItem, placeItem, updatePosition, rotateItem, bringToFront, sendToBack, removeFromRoom, storageItems, placedItems }
 }

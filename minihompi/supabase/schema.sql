@@ -126,6 +126,14 @@ create table if not exists miniroom_layout (
   unique (inventory_id)
 );
 
+create table if not exists miniroom_settings (
+  id int primary key default 1,
+  wallpaper text not null default 'peach',
+  floor text not null default 'wood',
+  constraint single_row_room_settings check (id = 1)
+);
+insert into miniroom_settings (id) values (1) on conflict (id) do nothing;
+
 -- =========================================================
 -- 7. 캐릭터 키우기 (다마고치)
 -- =========================================================
@@ -139,6 +147,7 @@ create table if not exists pet_state (
   equipped_outfit_id bigint,
   skin text not null default 'mascot', -- mascot | blob
   last_tick_at timestamptz default now(),
+  born_at timestamptz default now(),
   constraint single_row_pet check (id = 1)
 );
 insert into pet_state (id) values (1) on conflict (id) do nothing;
@@ -208,7 +217,7 @@ begin
     select unnest(array[
       'profile', 'visitor_log', 'user_stats', 'points_ledger',
       'diary_entries', 'albums', 'photos', 'missions_log',
-      'miniroom_catalog', 'miniroom_inventory', 'miniroom_layout',
+      'miniroom_catalog', 'miniroom_inventory', 'miniroom_layout', 'miniroom_settings',
       'pet_state', 'pet_catalog', 'pet_inventory',
       'memos', 'guestbook', 'vocab_words', 'game_progress'
     ])

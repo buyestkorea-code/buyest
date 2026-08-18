@@ -1,18 +1,11 @@
 import { useCallback, useEffect, useMemo, useState } from 'react'
 import { supabase, isSupabaseConfigured } from '../lib/supabaseClient.js'
+import { resolvedStage } from '../utils/petEvolution.js'
 
 const DECAY_PER_HOUR = { hunger: 8, cleanliness: 6, happiness: 5 }
-const STAGE_THRESHOLDS = { hatchling: 5, grown: 20, sparkle: 50 }
 
 function clamp(n) {
   return Math.max(0, Math.min(100, Math.round(n)))
-}
-
-function stageForCareCount(count) {
-  if (count >= STAGE_THRESHOLDS.sparkle) return 'sparkle'
-  if (count >= STAGE_THRESHOLDS.grown) return 'grown'
-  if (count >= STAGE_THRESHOLDS.hatchling) return 'hatchling'
-  return 'egg'
 }
 
 function applyDecay(state) {
@@ -25,14 +18,17 @@ function applyDecay(state) {
   }
 }
 
-const DEFAULT_STATE = { id: 1, stage: 'egg', hunger: 80, cleanliness: 80, happiness: 80, care_count: 0, equipped_outfit_id: null, skin: 'mascot', last_tick_at: new Date().toISOString() }
+const DEFAULT_STATE = {
+  id: 1, stage: 'egg', hunger: 80, cleanliness: 80, happiness: 80, care_count: 0,
+  equipped_outfit_id: null, skin: 'mascot', last_tick_at: new Date().toISOString(), born_at: new Date().toISOString(),
+}
 
 export function usePetState() {
   const [rawState, setRawState] = useState(DEFAULT_STATE)
   const [catalog, setCatalog] = useState([])
   const [inventory, setInventory] = useState([])
   const [loading, setLoading] = useState(true)
-  const [, forceTick] = useState(0)
+  const [tick, setTick] = useState(0)
 
   const refresh = useCallback(async () => {
     if (!isSupabaseConfigured) { setLoading(false); return }
@@ -51,14 +47,19 @@ export function usePetState() {
   useEffect(() => { refresh() }, [refresh])
 
   useEffect(() => {
-    const t = setInterval(() => forceTick((n) => n + 1), 15000)
+    const t = setInterval(() => setTick((n) => n + 1), 15000)
     return () => clearInterval(t)
   }, [])
 
-  const liveState = useMemo(() => applyDecay(rawState), [rawState])
+  const liveState = useMemo(() => {
+    const decayed = applyDecay(rawState)
+    return { ...decayed, stage: resolvedStage(decayed.care_count, rawState.born_at) }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [rawState, tick])
 
   const persist = useCallback(async (patch) => {
-    const next = { ...liveState, ...patch, last_tick_at: new Date().toISOString() }
+    const merged = { ...liveState, ...patch, last_tick_at: new Date().toISOString() }
+    const next = { ...merged, stage: resolvedStage(merged.care_count, liveState.born_at) }
     setRawState(next)
     if (isSupabaseConfigured) {
       await supabase.from('pet_state').update({
@@ -83,7 +84,6 @@ export function usePetState() {
       cleanliness: clamp(liveState.cleanliness + (effect.cleanliness || 0)),
       happiness: clamp(liveState.happiness + (effect.happiness || 0)),
       care_count: nextCareCount,
-      stage: stageForCareCount(nextCareCount),
     })
     if (invItem.item?.type !== 'outfit' && isSupabaseConfigured) {
       if (invItem.quantity <= 1) {

@@ -3,7 +3,7 @@ import DraggableItem from './DraggableItem.jsx'
 import RoomBackdrop from './RoomBackdrop.jsx'
 import RoomCharacter from './RoomCharacter.jsx'
 
-export default function RoomCanvas({ placedItems, onUpdatePosition, onRemove, character }) {
+export default function RoomCanvas({ placedItems, onUpdatePosition, onRotate, onBringToFront, onSendToBack, onRemove, character, wallpaper, floor }) {
   const canvasRef = useRef(null)
   const [selectedId, setSelectedId] = useState(null)
 
@@ -18,7 +18,7 @@ export default function RoomCanvas({ placedItems, onUpdatePosition, onRemove, ch
         }}
         onClick={() => setSelectedId(null)}
       >
-        <RoomBackdrop />
+        <RoomBackdrop wallpaper={wallpaper} floor={floor} />
         {character && <RoomCharacter {...character} />}
         {placedItems.map((p) => (
           <DraggableItem
@@ -37,9 +37,16 @@ export default function RoomCanvas({ placedItems, onUpdatePosition, onRemove, ch
         )}
       </div>
       {selectedId && (
-        <button className="btn btn-block btn-ghost" onClick={() => { onRemove(selectedId); setSelectedId(null) }}>
-          📦 선택한 아이템 보관함으로 넣기
-        </button>
+        <div className="stack">
+          <div className="row">
+            <button className="btn" style={{ flex: 1 }} onClick={() => onRotate(selectedId)}>🔄 회전</button>
+            <button className="btn" style={{ flex: 1 }} onClick={() => onBringToFront(selectedId)}>⬆️ 앞으로</button>
+            <button className="btn" style={{ flex: 1 }} onClick={() => onSendToBack(selectedId)}>⬇️ 뒤로</button>
+          </div>
+          <button className="btn btn-block btn-ghost" onClick={() => { onRemove(selectedId); setSelectedId(null) }}>
+            📦 선택한 아이템 보관함으로 넣기
+          </button>
+        </div>
       )}
     </div>
   )

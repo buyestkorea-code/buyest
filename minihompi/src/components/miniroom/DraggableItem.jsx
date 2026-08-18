@@ -17,6 +17,8 @@ export default function DraggableItem({ placed, canvasRef, onDragEnd, onTap, sel
         top: `${placed.y}%`,
         translateX: '-50%',
         translateY: '-50%',
+        rotate: placed.rotation || 0,
+        zIndex: placed.z_index || 0,
         touchAction: 'none',
         cursor: 'grab',
         userSelect: 'none',
