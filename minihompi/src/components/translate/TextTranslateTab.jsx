@@ -23,7 +23,8 @@ export default function TextTranslateTab({ onSaveWord }) {
       const translated = await translateText(input, source, target)
       setResult(translated)
     } catch (e) {
-      setError('번역에 실패했어요. 인터넷 연결을 확인해주세요.')
+      const message = e?.message || ''
+      setError(/[가-힣]/.test(message) ? message : '번역에 실패했어요. 인터넷 연결을 확인해주세요.')
     } finally {
       setLoading(false)
     }

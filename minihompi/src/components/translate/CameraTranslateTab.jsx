@@ -39,7 +39,8 @@ export default function CameraTranslateTab({ onSaveWord }) {
       setTranslated(result)
       setStatus('done')
     } catch (e) {
-      setError('인식이나 번역에 실패했어요. 다시 시도해보세요.')
+      const message = e?.message || ''
+      setError(/[가-힣]/.test(message) ? message : '인식이나 번역에 실패했어요. 다시 시도해보세요.')
       setStatus('idle')
     }
   }
