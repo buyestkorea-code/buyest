@@ -11,6 +11,7 @@ export default function CameraTranslateTab({ onSaveWord }) {
   const [status, setStatus] = useState('idle') // idle | recognizing | translating | done
   const [recognized, setRecognized] = useState('')
   const [translated, setTranslated] = useState('')
+  const [engine, setEngine] = useState(null)
   const [error, setError] = useState(null)
   const [saved, setSaved] = useState(false)
   const { award } = usePoints()
@@ -21,6 +22,7 @@ export default function CameraTranslateTab({ onSaveWord }) {
     setSaved(false)
     setRecognized('')
     setTranslated('')
+    setEngine(null)
     setPhotoUrl(URL.createObjectURL(file))
 
     try {
@@ -36,7 +38,8 @@ export default function CameraTranslateTab({ onSaveWord }) {
 
       setStatus('translating')
       const result = await translateText(firstWord, 'en', 'ko')
-      setTranslated(result)
+      setTranslated(result.text)
+      setEngine(result.engine)
       setStatus('done')
     } catch (e) {
       const message = e?.message || ''
@@ -82,6 +85,9 @@ export default function CameraTranslateTab({ onSaveWord }) {
           <p style={{ fontSize: 18, fontWeight: 800, margin: 0 }}>{recognized}</p>
           <p style={{ fontSize: 12, opacity: 0.6, margin: 0 }}>번역 결과</p>
           <p style={{ fontSize: 20, fontWeight: 800, margin: 0 }}>{translated}</p>
+          <p style={{ fontSize: 11, opacity: 0.4, margin: 0 }}>
+            🌐 {engine === 'lingva' ? 'Lingva' : 'MyMemory'} 엔진으로 번역됨
+          </p>
           <button className="btn btn-secondary" onClick={handleSave} disabled={saved}>
             {saved ? '단어장에 저장됨 ✅' : '📔 단어장에 저장하고 포인트 받기'}
           </button>

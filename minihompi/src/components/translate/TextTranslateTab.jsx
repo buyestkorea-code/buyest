@@ -23,6 +23,7 @@ export default function TextTranslateTab({ onSaveWord }) {
       const translated = await translateText(input, source, target)
       setResult(translated)
     } catch (e) {
+      setResult(null)
       const message = e?.message || ''
       setError(/[가-힣]/.test(message) ? message : '번역에 실패했어요. 인터넷 연결을 확인해주세요.')
     } finally {
@@ -32,8 +33,8 @@ export default function TextTranslateTab({ onSaveWord }) {
 
   async function handleSave() {
     if (!result) return
-    const wordEn = direction === 'ko-en' ? result : input
-    const wordKo = direction === 'ko-en' ? input : result
+    const wordEn = direction === 'ko-en' ? result.text : input
+    const wordKo = direction === 'ko-en' ? input : result.text
     const { isNew } = await onSaveWord(wordEn, wordKo, 'text')
     setSaved(true)
     if (isNew) await award(WORD_POINTS, '새 단어 저장', 'vocab')
@@ -73,7 +74,10 @@ export default function TextTranslateTab({ onSaveWord }) {
       {result && (
         <div className="card stack">
           <p style={{ fontSize: 12, opacity: 0.6, margin: 0 }}>번역 결과</p>
-          <p style={{ fontSize: 20, fontWeight: 800, margin: 0 }}>{result}</p>
+          <p style={{ fontSize: 20, fontWeight: 800, margin: 0 }}>{result.text}</p>
+          <p style={{ fontSize: 11, opacity: 0.4, margin: 0 }}>
+            🌐 {result.engine === 'lingva' ? 'Lingva' : 'MyMemory'} 엔진으로 번역됨
+          </p>
           <button className="btn btn-secondary" onClick={handleSave} disabled={saved}>
             {saved ? '단어장에 저장됨 ✅' : '📔 단어장에 저장하고 포인트 받기'}
           </button>

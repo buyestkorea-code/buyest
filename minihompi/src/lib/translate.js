@@ -67,15 +67,17 @@ async function translateWithMyMemory(text, sourcelang, targetLang) {
   return translated
 }
 
+// { text, engine } 을 반환합니다. engine 은 'lingva' | 'mymemory' — 결과가 이상할 때
+// 화면에 작게 표시해서, 어떤 번역 엔진이 답했는지 캡처해 보내주면 원인을 빠르게 찾을 수 있어요.
 export async function translateText(text, sourcelang, targetLang) {
   const trimmed = text.trim()
   if (!trimmed) return null
 
   const fromLingva = await translateWithLingva(trimmed, sourcelang, targetLang)
-  if (fromLingva) return fromLingva
+  if (fromLingva) return { text: fromLingva, engine: 'lingva' }
 
   const fromMyMemory = await translateWithMyMemory(trimmed, sourcelang, targetLang)
-  if (fromMyMemory) return fromMyMemory
+  if (fromMyMemory) return { text: fromMyMemory, engine: 'mymemory' }
 
   throw new Error('번역 결과를 받지 못했어요. 잠시 후 다시 시도해주세요.')
 }
