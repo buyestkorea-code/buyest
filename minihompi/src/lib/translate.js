@@ -1,10 +1,12 @@
 // 번역 우선순위:
 // 1) Lingva(구글 번역 품질의 무료 오픈소스 API, 여러 공개 인스턴스로 동시에 시도) — 정확도가 가장 좋음
-// 2) 위가 전부 실패하면 MyMemory 무료 API로 대체 (짧은 단어에서 가끔 다른 언어로 잘못 매칭되는
-//    문제가 있어, 실제 요청한 언어쌍과 정확히 일치하는 결과만 신뢰하고, 무료 사용량 초과 경고
-//    문구가 번역 결과인 것처럼 오는 경우도 걸러낸다)
-// 두 엔진 모두 결과를 그대로 믿지 않고, 목표 언어와 전혀 다른 글자(예: 영어를 요청했는데
-// 한글/키릴/한자 등이 섞여 나오는 경우)가 나오면 "번역 실패"로 간주하고 다음 방법으로 넘어간다.
+// 2) 위가 전부 실패하면 MyMemory 무료 API로 대체 (짧은 단어에서 가끔 다른 언어로 잘못 매칭되거나,
+//    관련도 낮은 여러 문장 조각을 이어붙인 엉터리 결과를 주는 경우가 있어, 실제 요청한 언어쌍과
+//    정확히 일치하는 결과만 신뢰하고, 무료 사용량 초과 경고 문구나 비정상적으로 긴 결과도 걸러낸다)
+// 두 엔진 모두 결과를 그대로 믿지 않고
+//  - 목표 언어와 전혀 다른 글자(예: 영어를 요청했는데 한글/키릴/한자 등이 섞여 나오는 경우)
+//  - 짧은 단어를 입력했는데 결과가 비정상적으로 긴 경우(여러 문장 조각이 이어붙은 걸로 의심)
+// 가 나오면 "번역 실패"로 간주하고 다음 방법으로 넘어간다.
 const LINGVA_INSTANCES = [
   'https://lingva.thedaviddelta.com',
   'https://lingva.ml',
@@ -18,14 +20,29 @@ const HANGUL_RE = /[가-힣]/
 // 한글이 아니면서 라틴 문자가 아닌 문자 체계(키릴, 그리스, 한자, 일본어 가나, 아랍, 태국 등)
 const OTHER_SCRIPT_RE = /[Ѐ-ӿͰ-Ͽ一-鿿぀-ヿ؀-ۿ฀-๿]/
 
-function isValidTranslation(text, targetLang) {
-  if (!text || !text.trim()) return false
-  if (targetLang === 'ko') return HANGUL_RE.test(text)
-  if (targetLang === 'en') return !HANGUL_RE.test(text) && !OTHER_SCRIPT_RE.test(text)
+function wordCount(text) {
+  return text.trim().split(/\s+/).filter(Boolean).length
+}
+
+// 입력이 짧은 단어/구인데 결과가 훨씬 길면, 관련 없는 여러 문장 조각을 이어붙인 것으로 의심하고
+// 신뢰하지 않는다 (예: "dugout" 하나를 검색했는데 야구장 관련 문장 여러 개가 이어붙어 나오는 경우)
+function looksLikeGarbledConcat(original, translated) {
+  const inputWords = wordCount(original)
+  const outputWords = wordCount(translated)
+  if (inputWords <= 2 && outputWords >= 6) return true
+  if (outputWords > inputWords * 4 + 4) return true
+  return false
+}
+
+function isReliableTranslation(original, translated, targetLang) {
+  if (!translated || !translated.trim()) return false
+  if (targetLang === 'ko' && !HANGUL_RE.test(translated)) return false
+  if (targetLang === 'en' && (HANGUL_RE.test(translated) || OTHER_SCRIPT_RE.test(translated))) return false
+  if (looksLikeGarbledConcat(original, translated)) return false
   return true
 }
 
-async function fetchWithTimeout(url, timeoutMs = 5000) {
+async function fetchWithTimeout(url, timeoutMs = 6000) {
   const controller = new AbortController()
   const timer = setTimeout(() => controller.abort(), timeoutMs)
   try {
@@ -42,8 +59,7 @@ async function translateWithLingva(text, sourcelang, targetLang) {
     if (!res.ok) throw new Error('lingva request failed')
     const data = await res.json()
     const translated = data?.translation?.trim()
-    if (!translated) throw new Error('lingva empty result')
-    if (!isValidTranslation(translated, targetLang)) throw new Error('lingva wrong-language result')
+    if (!isReliableTranslation(text, translated, targetLang)) throw new Error('lingva unreliable result')
     return translated
   })
   try {
@@ -79,8 +95,8 @@ async function translateWithMyMemory(text, sourcelang, targetLang) {
   const rawTranslated = data?.responseData?.translatedText
   if (looksLikeQuotaWarning(rawTranslated)) return null
   const translated = pickReliableMemoryMatch(data, sourcelang, targetLang) || rawTranslated
-  if (!translated || looksLikeQuotaWarning(translated)) return null
-  if (!isValidTranslation(translated, targetLang)) return null
+  if (looksLikeQuotaWarning(translated)) return null
+  if (!isReliableTranslation(text, translated, targetLang)) return null
   return translated
 }
 
@@ -96,5 +112,5 @@ export async function translateText(text, sourcelang, targetLang) {
   const fromMyMemory = await translateWithMyMemory(trimmed, sourcelang, targetLang)
   if (fromMyMemory) return { text: fromMyMemory, engine: 'mymemory' }
 
-  throw new Error('번역 결과를 받지 못했어요. 잠시 후 다시 시도해주세요.')
+  throw new Error('지금은 정확한 번역을 찾지 못했어요. 잠시 후 다시 시도해주세요.')
 }
