@@ -3,12 +3,27 @@
 // 2) 위가 전부 실패하면 MyMemory 무료 API로 대체 (짧은 단어에서 가끔 다른 언어로 잘못 매칭되는
 //    문제가 있어, 실제 요청한 언어쌍과 정확히 일치하는 결과만 신뢰하고, 무료 사용량 초과 경고
 //    문구가 번역 결과인 것처럼 오는 경우도 걸러낸다)
+// 두 엔진 모두 결과를 그대로 믿지 않고, 목표 언어와 전혀 다른 글자(예: 영어를 요청했는데
+// 한글/키릴/한자 등이 섞여 나오는 경우)가 나오면 "번역 실패"로 간주하고 다음 방법으로 넘어간다.
 const LINGVA_INSTANCES = [
   'https://lingva.thedaviddelta.com',
   'https://lingva.ml',
   'https://lingva.garudalinux.org',
   'https://translate.plausibility.cloud',
+  'https://lingva.lunar.icu',
+  'https://lingva.esmailelbob.xyz',
 ]
+
+const HANGUL_RE = /[가-힣]/
+// 한글이 아니면서 라틴 문자가 아닌 문자 체계(키릴, 그리스, 한자, 일본어 가나, 아랍, 태국 등)
+const OTHER_SCRIPT_RE = /[Ѐ-ӿͰ-Ͽ一-鿿぀-ヿ؀-ۿ฀-๿]/
+
+function isValidTranslation(text, targetLang) {
+  if (!text || !text.trim()) return false
+  if (targetLang === 'ko') return HANGUL_RE.test(text)
+  if (targetLang === 'en') return !HANGUL_RE.test(text) && !OTHER_SCRIPT_RE.test(text)
+  return true
+}
 
 async function fetchWithTimeout(url, timeoutMs = 5000) {
   const controller = new AbortController()
@@ -26,9 +41,10 @@ async function translateWithLingva(text, sourcelang, targetLang) {
     const res = await fetchWithTimeout(url)
     if (!res.ok) throw new Error('lingva request failed')
     const data = await res.json()
-    const translated = data?.translation
-    if (!translated || !translated.trim()) throw new Error('lingva empty result')
-    return translated.trim()
+    const translated = data?.translation?.trim()
+    if (!translated) throw new Error('lingva empty result')
+    if (!isValidTranslation(translated, targetLang)) throw new Error('lingva wrong-language result')
+    return translated
   })
   try {
     return await Promise.any(attempts)
@@ -64,6 +80,7 @@ async function translateWithMyMemory(text, sourcelang, targetLang) {
   if (looksLikeQuotaWarning(rawTranslated)) return null
   const translated = pickReliableMemoryMatch(data, sourcelang, targetLang) || rawTranslated
   if (!translated || looksLikeQuotaWarning(translated)) return null
+  if (!isValidTranslation(translated, targetLang)) return null
   return translated
 }
 
