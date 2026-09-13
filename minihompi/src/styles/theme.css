@@ -13,8 +13,8 @@
   --color-lavender: #e6dcff;
   --color-peach: #ffdcc2;
 
-  --radius-lg: 22px;
-  --radius-md: 16px;
+  --radius-lg: 18px;
+  --radius-md: 14px;
   --radius-sm: 10px;
 
   --safe-top: env(safe-area-inset-top, 0px);
@@ -68,7 +68,7 @@ a {
 .card {
   background: var(--skin-card);
   border-radius: var(--radius-lg);
-  box-shadow: 0 6px 18px var(--skin-shadow);
+  box-shadow: 0 4px 14px var(--skin-shadow);
   padding: 16px;
 }
 

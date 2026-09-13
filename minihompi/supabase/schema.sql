@@ -207,6 +207,18 @@ create table if not exists game_progress (
 );
 
 -- =========================================================
+-- 11. 일정관리 (플래너)
+-- =========================================================
+create table if not exists planner_items (
+  id bigint generated always as identity primary key,
+  title text not null,
+  item_date date not null,
+  category text not null default 'todo', -- todo | homework | exam | event
+  done boolean not null default false,
+  created_at timestamptz default now()
+);
+
+-- =========================================================
 -- RLS: 전체 공개 읽기/쓰기 허용 (가족용 개인 사이트)
 -- =========================================================
 do $$
@@ -219,7 +231,7 @@ begin
       'diary_entries', 'albums', 'photos', 'missions_log',
       'miniroom_catalog', 'miniroom_inventory', 'miniroom_layout', 'miniroom_settings',
       'pet_state', 'pet_catalog', 'pet_inventory',
-      'memos', 'guestbook', 'vocab_words', 'game_progress'
+      'memos', 'guestbook', 'vocab_words', 'game_progress', 'planner_items'
     ])
   loop
     execute format('alter table %I enable row level security;', t);
@@ -270,6 +282,7 @@ insert into miniroom_catalog (name, image_url, price, category) values
   ('카펫(하트무늬)', null, 22, 'floor'),
   ('병아리 인형', null, 18, 'deco'),
   ('블롭 인형', null, 20, 'deco'),
+  ('여우 인형', null, 22, 'deco'),
   ('화분', null, 14, 'deco'),
   ('벽 포스터', null, 16, 'deco'),
   ('전신거울', null, 32, 'furniture'),
@@ -308,7 +321,30 @@ insert into miniroom_catalog (name, image_url, price, category) values
   ('✨ 드래곤 알', null, 95, 'deco'),
   ('✨ 마법 융단', null, 140, 'floor'),
   ('✨ 별빛 텐트', null, 170, 'furniture'),
-  ('✨ 황금 리트리버 인형', null, 100, 'deco')
+  ('✨ 황금 리트리버 인형', null, 100, 'deco'),
+  ('게이밍 헤드셋', null, 25, 'deco'),
+  ('게이밍 의자', null, 30, 'furniture'),
+  ('레트로 게임기', null, 28, 'deco'),
+  ('빈백 소파', null, 26, 'furniture'),
+  ('어쿠스틱 기타', null, 24, 'deco'),
+  ('다트보드', null, 18, 'deco'),
+  ('LED 무드바', null, 20, 'deco'),
+  ('후드티 옷걸이', null, 15, 'deco'),
+  ('스니커즈 진열장', null, 22, 'furniture'),
+  ('힙합 포스터', null, 14, 'deco'),
+  ('블루투스 스피커', null, 20, 'deco'),
+  ('폴라로이드 클립', null, 12, 'deco'),
+  ('스케이트보드', null, 22, 'deco'),
+  ('농구공', null, 14, 'deco'),
+  ('만화책 더미', null, 13, 'deco'),
+  ('캡모자', null, 12, 'deco'),
+  ('스트릿 백팩', null, 16, 'deco'),
+  ('무선 이어폰', null, 18, 'deco'),
+  ('미니 냉장고', null, 24, 'furniture'),
+  ('다이어리 플래너', null, 14, 'deco'),
+  ('✨ 홀로그램 턴테이블', null, 90, 'deco'),
+  ('✨ 네온 사인 조명', null, 70, 'deco'),
+  ('✨ 프리미엄 게이밍 셋업', null, 180, 'furniture')
 on conflict (name) do nothing;
 
 insert into pet_catalog (name, type, image_url, price, effect) values

@@ -1,9 +1,8 @@
-import Mascot from '../common/Mascot.jsx'
-import BlobPet from '../pet/BlobPet.jsx'
 import OutfitOverlay from '../pet/OutfitOverlay.jsx'
+import { getSkinComponent } from '../../utils/petSkins.js'
 
 export default function RoomCharacter({ skin, mood = 'happy', outfitName }) {
-  const CharacterComponent = skin === 'blob' ? BlobPet : Mascot
+  const CharacterComponent = getSkinComponent(skin)
 
   return (
     <div

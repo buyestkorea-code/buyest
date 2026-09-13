@@ -1,9 +1,11 @@
 import Mascot from '../common/Mascot.jsx'
 import BlobPet from './BlobPet.jsx'
+import FoxSpirit from './FoxSpirit.jsx'
 
 const SKINS = [
   { key: 'mascot', label: '병아리 친구', Comp: Mascot },
   { key: 'blob', label: '핑크 젤리 친구', Comp: BlobPet },
+  { key: 'fox', label: '쿨한 여우 친구', Comp: FoxSpirit },
 ]
 
 export default function PetSkinPicker({ skin, onSelect }) {

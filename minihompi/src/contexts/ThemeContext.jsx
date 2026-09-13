@@ -9,6 +9,8 @@ export const SKINS = {
   sky: { label: '하늘 구름', bg: '#f2fbff', accent: '#cfeeff', accent2: '#ffe9b0' },
   lavender: { label: '라벤더 별', bg: '#f8f5ff', accent: '#e6dcff', accent2: '#ffd6e8' },
   peach: { label: '복숭아', bg: '#fff6f0', accent: '#ffdcc2', accent2: '#c8f4e0' },
+  charcoal: { label: '차콜 그레이', bg: '#f4f5f7', accent: '#dbe1ea', accent2: '#c9ded9' },
+  denim: { label: '데님 블루', bg: '#eef3fa', accent: '#cfe0f5', accent2: '#e4d9f7' },
 }
 
 function applySkin(skinKey) {

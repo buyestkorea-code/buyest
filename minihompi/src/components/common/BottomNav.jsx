@@ -10,6 +10,7 @@ export const NAV_ITEMS = [
 
 export const MENU_ITEMS = [
   { to: '/diary', emoji: '📔', label: '일기장' },
+  { to: '/planner', emoji: '🗓️', label: '일정관리' },
   { to: '/album', emoji: '📷', label: '사진첩' },
   { to: '/mission', emoji: '🗺️', label: '오늘의 미션' },
   { to: '/miniroom', emoji: '🛋️', label: '미니룸' },

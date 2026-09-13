@@ -1,8 +1,7 @@
-import Mascot from '../common/Mascot.jsx'
-import BlobPet from './BlobPet.jsx'
 import OutfitOverlay from './OutfitOverlay.jsx'
 import { moodFromGauges } from '../../utils/petMood.js'
 import { nextEvolutionHint } from '../../utils/petEvolution.js'
+import { getSkinComponent } from '../../utils/petSkins.js'
 
 function statusMessage(state) {
   const lowest = Math.min(state.hunger, state.cleanliness, state.happiness)
@@ -37,7 +36,7 @@ export default function PetStage({ state, outfitName }) {
   }
 
   const mood = moodFromGauges(state)
-  const CharacterComponent = state.skin === 'blob' ? BlobPet : Mascot
+  const CharacterComponent = getSkinComponent(state.skin)
   const isSparkleStage = state.stage === 'sparkle'
 
   return (

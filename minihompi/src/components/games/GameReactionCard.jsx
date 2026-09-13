@@ -1,9 +1,8 @@
-import Mascot from '../common/Mascot.jsx'
-import BlobPet from '../pet/BlobPet.jsx'
+import { getSkinComponent } from '../../utils/petSkins.js'
 
 export default function GameReactionCard({ reaction }) {
   if (!reaction) return null
-  const CharComp = reaction.skin === 'blob' ? BlobPet : Mascot
+  const CharComp = getSkinComponent(reaction.skin)
 
   return (
     <div className="row" style={{ alignItems: 'center', gap: 10, background: '#fff7ea', borderRadius: 14, padding: 10 }}>
