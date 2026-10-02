@@ -4,6 +4,7 @@ import { usePoints } from '../contexts/PointsContext.jsx'
 import { isSupabaseConfigured } from '../lib/supabaseClient.js'
 import { uploadToBucket, publicUrl } from '../lib/storage.js'
 import DoodlePad from '../components/diary/DoodlePad.jsx'
+import PhotoStylizePad from '../components/encyclopedia/PhotoStylizePad.jsx'
 import LoadingScreen from '../components/common/LoadingScreen.jsx'
 
 const ENCYCLOPEDIA_POINTS = 10
@@ -31,7 +32,9 @@ export default function EncyclopediaPage() {
   const [name, setName] = useState('')
   const [details, setDetails] = useState('')
   const [saving, setSaving] = useState(false)
+  const [mode, setMode] = useState('photo') // photo | draw
   const doodleRef = useRef(null)
+  const photoRef = useRef(null)
 
   const usedCategories = [...new Set(entries.map((e) => e.category))]
   const allCategories = [
@@ -45,8 +48,9 @@ export default function EncyclopediaPage() {
     setSaving(true)
     try {
       let doodlePath = null
-      if (doodleRef.current && isSupabaseConfigured) {
-        const blob = await doodleRef.current.toBlob()
+      const activeRef = mode === 'photo' ? photoRef : doodleRef
+      if (activeRef.current && isSupabaseConfigured) {
+        const blob = await activeRef.current.toBlob()
         if (blob) {
           const path = `encyclopedia-${Date.now()}.png`
           await uploadToBucket('doodles', path, blob, 'image/png')
@@ -59,6 +63,7 @@ export default function EncyclopediaPage() {
       setDetails('')
       setCustomCategory('')
       doodleRef.current?.clear()
+      photoRef.current?.clear()
       setAdding(false)
     } finally {
       setSaving(false)
@@ -107,8 +112,25 @@ export default function EncyclopediaPage() {
             onChange={(e) => setDetails(e.target.value)}
           />
 
-          <p style={{ fontSize: 12, opacity: 0.6 }}>🎨 직접 그려보세요</p>
-          <DoodlePad ref={doodleRef} />
+          <div className="row">
+            <button className="btn" style={{ flex: 1, background: mode === 'photo' ? 'var(--color-pink)' : '#f8f4ea' }} onClick={() => setMode('photo')}>
+              📷 사진으로 등록
+            </button>
+            <button className="btn" style={{ flex: 1, background: mode === 'draw' ? 'var(--color-pink)' : '#f8f4ea' }} onClick={() => setMode('draw')}>
+              🎨 직접 그리기
+            </button>
+          </div>
+          {mode === 'photo' ? (
+            <>
+              <p style={{ fontSize: 12, opacity: 0.6 }}>사진을 올리면 도감 그림체로 자동으로 바뀌어요!</p>
+              <PhotoStylizePad ref={photoRef} />
+            </>
+          ) : (
+            <>
+              <p style={{ fontSize: 12, opacity: 0.6 }}>🎨 직접 그려보세요</p>
+              <DoodlePad ref={doodleRef} />
+            </>
+          )}
 
           <div className="row">
             <button className="btn btn-ghost" style={{ flex: 1 }} onClick={() => setAdding(false)}>취소</button>
