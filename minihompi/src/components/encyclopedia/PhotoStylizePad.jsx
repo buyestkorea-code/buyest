@@ -26,7 +26,8 @@ function drawContain(canvas, img, bg = '#fffdf8') {
 
 const PhotoStylizePad = forwardRef(function PhotoStylizePad({ name }, ref) {
   const canvasRef = useRef(null)
-  const fileInputRef = useRef(null)
+  const cameraInputRef = useRef(null)
+  const libraryInputRef = useRef(null)
   const [status, setStatus] = useState('idle') // idle | ai-working | filter-working | done
   const [engine, setEngine] = useState(null) // 'ai' | 'filter'
   const [error, setError] = useState(null)
@@ -85,14 +86,24 @@ const PhotoStylizePad = forwardRef(function PhotoStylizePad({ name }, ref) {
         style={{ width: '100%', borderRadius: 12, border: '2px solid var(--color-pink)', background: '#fffdf8' }}
       />
       <div className="row-wrap">
-        <button className="btn" onClick={() => fileInputRef.current?.click()}>
-          {status === 'done' ? '🔄 다른 사진 선택' : '📷 사진 선택하고 도감 그림으로 바꾸기'}
+        <button className="btn" onClick={() => cameraInputRef.current?.click()}>
+          📷 사진 찍기
+        </button>
+        <button className="btn" onClick={() => libraryInputRef.current?.click()}>
+          🖼️ 앨범에서 선택
         </button>
         <input
-          ref={fileInputRef}
+          ref={cameraInputRef}
           type="file"
           accept="image/*"
           capture="environment"
+          hidden
+          onChange={(e) => handleFile(e.target.files[0])}
+        />
+        <input
+          ref={libraryInputRef}
+          type="file"
+          accept="image/*"
           hidden
           onChange={(e) => handleFile(e.target.files[0])}
         />
