@@ -31,6 +31,7 @@ const PhotoStylizePad = forwardRef(function PhotoStylizePad({ name }, ref) {
   const [status, setStatus] = useState('idle') // idle | ai-working | filter-working | done
   const [engine, setEngine] = useState(null) // 'ai' | 'filter'
   const [error, setError] = useState(null)
+  const [aiFailReason, setAiFailReason] = useState(null)
 
   useImperativeHandle(ref, () => ({
     toBlob: () => new Promise((resolve) => canvasRef.current.toBlob(resolve, 'image/png')),
@@ -38,6 +39,7 @@ const PhotoStylizePad = forwardRef(function PhotoStylizePad({ name }, ref) {
       setStatus('idle')
       setEngine(null)
       setError(null)
+      setAiFailReason(null)
       const canvas = canvasRef.current
       canvas.width = ART_WIDTH
       canvas.height = ART_HEIGHT
@@ -50,6 +52,7 @@ const PhotoStylizePad = forwardRef(function PhotoStylizePad({ name }, ref) {
   async function handleFile(file) {
     if (!file) return
     setError(null)
+    setAiFailReason(null)
 
     if (isSupabaseConfigured) {
       setStatus('ai-working')
@@ -60,8 +63,9 @@ const PhotoStylizePad = forwardRef(function PhotoStylizePad({ name }, ref) {
         setEngine('ai')
         setStatus('done')
         return
-      } catch {
+      } catch (e) {
         // AI 변환에 실패하면 아래에서 무료 필터로 자동 전환
+        setAiFailReason(e?.message || 'AI 연결에 실패했어요')
       }
     }
 
@@ -113,6 +117,11 @@ const PhotoStylizePad = forwardRef(function PhotoStylizePad({ name }, ref) {
       {status === 'done' && (
         <p style={{ fontSize: 11, opacity: 0.5, margin: 0 }}>
           {engine === 'ai' ? '✨ AI가 새로 그려줬어요' : '🎨 색/윤곽선 필터로 바꿨어요'}
+        </p>
+      )}
+      {status === 'done' && engine === 'filter' && aiFailReason && (
+        <p style={{ fontSize: 11, opacity: 0.5, margin: 0, color: '#c77' }}>
+          (AI 연결 실패: {String(aiFailReason).slice(0, 120)})
         </p>
       )}
       {error && <p style={{ color: '#e64545', fontSize: 13 }}>{error}</p>}

@@ -93,16 +93,33 @@ function overlayEdges(data, width, height, threshold = 70) {
   }
 }
 
+// 실제 사진(어두운 배경, 손떨림, JPEG 압축 노이즈 등)은 원본 해상도에서 바로 윤곽선을
+// 따면 잡티가 다 선으로 잡혀서 지저분해짐. 먼저 작은 해상도로 축소해서(=다운스케일 자체가
+// 노이즈를 평균내서 없애줌) 필터를 적용한 뒤, 다시 확대해서 부드러운 포스터 느낌을 냄.
+const WORK_SCALE = 0.4
+
 export function renderEncyclopediaArt(canvas, img) {
+  const workWidth = Math.round(ART_WIDTH * WORK_SCALE)
+  const workHeight = Math.round(ART_HEIGHT * WORK_SCALE)
+
+  const workCanvas = document.createElement('canvas')
+  workCanvas.width = workWidth
+  workCanvas.height = workHeight
+  const workCtx = workCanvas.getContext('2d')
+  drawImageContain(workCtx, img, workWidth, workHeight)
+
+  const imageData = workCtx.getImageData(0, 0, workWidth, workHeight)
+  boxBlur(imageData.data, workWidth, workHeight, 1, 1)
+  posterizeAndSaturate(imageData.data, 5, 1.6)
+  overlayEdges(imageData.data, workWidth, workHeight, 55)
+  workCtx.putImageData(imageData, 0, 0)
+
   canvas.width = ART_WIDTH
   canvas.height = ART_HEIGHT
   const ctx = canvas.getContext('2d')
-  drawImageContain(ctx, img, ART_WIDTH, ART_HEIGHT)
-  const imageData = ctx.getImageData(0, 0, ART_WIDTH, ART_HEIGHT)
-  boxBlur(imageData.data, ART_WIDTH, ART_HEIGHT, 2, 2)
-  posterizeAndSaturate(imageData.data, 5, 1.6)
-  overlayEdges(imageData.data, ART_WIDTH, ART_HEIGHT, 90)
-  ctx.putImageData(imageData, 0, 0)
+  ctx.imageSmoothingEnabled = true
+  ctx.imageSmoothingQuality = 'high'
+  ctx.drawImage(workCanvas, 0, 0, workWidth, workHeight, 0, 0, ART_WIDTH, ART_HEIGHT)
 }
 
 export function loadImageFromFile(file) {

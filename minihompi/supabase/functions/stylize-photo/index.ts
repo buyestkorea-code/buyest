@@ -59,12 +59,16 @@ Deno.serve(async (req: Request) => {
               ],
             },
           ],
+          generationConfig: {
+            responseModalities: ['TEXT', 'IMAGE'],
+          },
         }),
       }
     )
 
     if (!geminiRes.ok) {
       const errText = await geminiRes.text()
+      console.error('Gemini API error', geminiRes.status, errText.slice(0, 800))
       return json({ error: `AI 변환 요청이 실패했어요: ${errText.slice(0, 300)}` }, 502)
     }
 
@@ -73,7 +77,16 @@ Deno.serve(async (req: Request) => {
     const imagePart = parts.find((p: { inlineData?: { data?: string } }) => p.inlineData?.data)
 
     if (!imagePart) {
-      return json({ error: 'AI가 이미지를 만들지 못했어요.' }, 502)
+      const textPart = parts.find((p: { text?: string }) => p.text)?.text
+      const finishReason = data?.candidates?.[0]?.finishReason
+      const blockReason = data?.promptFeedback?.blockReason
+      console.error('No image part in Gemini response', { finishReason, blockReason, textPart, raw: JSON.stringify(data).slice(0, 800) })
+      return json(
+        {
+          error: `AI가 이미지를 만들지 못했어요. (사유: ${blockReason || finishReason || textPart || '알 수 없음'})`,
+        },
+        502
+      )
     }
 
     return json({
