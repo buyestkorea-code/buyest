@@ -16,6 +16,7 @@ import GuestbookPage from './pages/GuestbookPage.jsx'
 import GamesPage from './pages/GamesPage.jsx'
 import TranslatePage from './pages/TranslatePage.jsx'
 import PlannerPage from './pages/PlannerPage.jsx'
+import EncyclopediaPage from './pages/EncyclopediaPage.jsx'
 
 function SupabaseWarningBanner() {
   if (isSupabaseConfigured) return null
@@ -45,6 +46,7 @@ export default function App() {
             <Route path="/games" element={<GamesPage />} />
             <Route path="/translate" element={<TranslatePage />} />
             <Route path="/planner" element={<PlannerPage />} />
+            <Route path="/encyclopedia" element={<EncyclopediaPage />} />
           </Routes>
           <BottomNav />
           <LevelUpEffect />

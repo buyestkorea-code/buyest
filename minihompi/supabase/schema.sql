@@ -219,6 +219,19 @@ create table if not exists planner_items (
 );
 
 -- =========================================================
+-- 12. 도감
+-- =========================================================
+create table if not exists encyclopedia_entries (
+  id bigint generated always as identity primary key,
+  category text not null default '기타',
+  entry_no int not null default 1,
+  name text not null,
+  details text default '',
+  doodle_path text,
+  created_at timestamptz default now()
+);
+
+-- =========================================================
 -- RLS: 전체 공개 읽기/쓰기 허용 (가족용 개인 사이트)
 -- =========================================================
 do $$
@@ -231,7 +244,7 @@ begin
       'diary_entries', 'albums', 'photos', 'missions_log',
       'miniroom_catalog', 'miniroom_inventory', 'miniroom_layout', 'miniroom_settings',
       'pet_state', 'pet_catalog', 'pet_inventory',
-      'memos', 'guestbook', 'vocab_words', 'game_progress', 'planner_items'
+      'memos', 'guestbook', 'vocab_words', 'game_progress', 'planner_items', 'encyclopedia_entries'
     ])
   loop
     execute format('alter table %I enable row level security;', t);
