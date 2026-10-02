@@ -1,48 +1,44 @@
 import { forwardRef, useImperativeHandle, useRef, useState } from 'react'
-import { renderEncyclopediaArt, loadImageFromFile, ART_WIDTH, ART_HEIGHT } from '../../lib/encyclopediaArt.js'
-import { aiStylizeEncyclopediaPhoto } from '../../lib/aiStylize.js'
-import { isSupabaseConfigured } from '../../lib/supabaseClient.js'
 
-function loadImageFromDataUrl(dataUrl) {
+const CANVAS_WIDTH = 320
+const CANVAS_HEIGHT = 240
+
+function loadImageFromFile(file) {
   return new Promise((resolve, reject) => {
     const img = new Image()
     img.onload = () => resolve(img)
     img.onerror = reject
-    img.src = dataUrl
+    img.src = URL.createObjectURL(file)
   })
 }
 
 function drawContain(canvas, img, bg = '#fffdf8') {
-  canvas.width = ART_WIDTH
-  canvas.height = ART_HEIGHT
+  canvas.width = CANVAS_WIDTH
+  canvas.height = CANVAS_HEIGHT
   const ctx = canvas.getContext('2d')
   ctx.fillStyle = bg
-  ctx.fillRect(0, 0, ART_WIDTH, ART_HEIGHT)
-  const scale = Math.min(ART_WIDTH / img.width, ART_HEIGHT / img.height)
+  ctx.fillRect(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT)
+  const scale = Math.min(CANVAS_WIDTH / img.width, CANVAS_HEIGHT / img.height)
   const w = img.width * scale
   const h = img.height * scale
-  ctx.drawImage(img, (ART_WIDTH - w) / 2, (ART_HEIGHT - h) / 2, w, h)
+  ctx.drawImage(img, (CANVAS_WIDTH - w) / 2, (CANVAS_HEIGHT - h) / 2, w, h)
 }
 
-const PhotoStylizePad = forwardRef(function PhotoStylizePad({ name }, ref) {
+const PhotoStylizePad = forwardRef(function PhotoStylizePad(_props, ref) {
   const canvasRef = useRef(null)
   const cameraInputRef = useRef(null)
   const libraryInputRef = useRef(null)
-  const [status, setStatus] = useState('idle') // idle | ai-working | filter-working | done
-  const [engine, setEngine] = useState(null) // 'ai' | 'filter'
+  const [status, setStatus] = useState('idle') // idle | working | done
   const [error, setError] = useState(null)
-  const [aiFailReason, setAiFailReason] = useState(null)
 
   useImperativeHandle(ref, () => ({
     toBlob: () => new Promise((resolve) => canvasRef.current.toBlob(resolve, 'image/png')),
     clear: () => {
       setStatus('idle')
-      setEngine(null)
       setError(null)
-      setAiFailReason(null)
       const canvas = canvasRef.current
-      canvas.width = ART_WIDTH
-      canvas.height = ART_HEIGHT
+      canvas.width = CANVAS_WIDTH
+      canvas.height = CANVAS_HEIGHT
       const ctx = canvas.getContext('2d')
       ctx.fillStyle = '#fffdf8'
       ctx.fillRect(0, 0, canvas.width, canvas.height)
@@ -52,28 +48,10 @@ const PhotoStylizePad = forwardRef(function PhotoStylizePad({ name }, ref) {
   async function handleFile(file) {
     if (!file) return
     setError(null)
-    setAiFailReason(null)
-
-    if (isSupabaseConfigured) {
-      setStatus('ai-working')
-      try {
-        const dataUrl = await aiStylizeEncyclopediaPhoto(file, name)
-        const img = await loadImageFromDataUrl(dataUrl)
-        drawContain(canvasRef.current, img)
-        setEngine('ai')
-        setStatus('done')
-        return
-      } catch (e) {
-        // AI 변환에 실패하면 아래에서 무료 필터로 자동 전환
-        setAiFailReason(e?.message || 'AI 연결에 실패했어요')
-      }
-    }
-
-    setStatus('filter-working')
+    setStatus('working')
     try {
       const img = await loadImageFromFile(file)
-      renderEncyclopediaArt(canvasRef.current, img)
-      setEngine('filter')
+      drawContain(canvasRef.current, img)
       setStatus('done')
     } catch {
       setError('사진을 불러오지 못했어요. 다시 시도해보세요.')
@@ -112,18 +90,7 @@ const PhotoStylizePad = forwardRef(function PhotoStylizePad({ name }, ref) {
           onChange={(e) => handleFile(e.target.files[0])}
         />
       </div>
-      {status === 'ai-working' && <p className="pill">🤖 AI가 도감 그림으로 그려주는 중... (몇 초 걸려요)</p>}
-      {status === 'filter-working' && <p className="pill">🎨 도감 그림으로 바꾸는 중...</p>}
-      {status === 'done' && (
-        <p style={{ fontSize: 11, opacity: 0.5, margin: 0 }}>
-          {engine === 'ai' ? '✨ AI가 새로 그려줬어요' : '🎨 색/윤곽선 필터로 바꿨어요'}
-        </p>
-      )}
-      {status === 'done' && engine === 'filter' && aiFailReason && (
-        <p style={{ fontSize: 11, opacity: 0.5, margin: 0, color: '#c77' }}>
-          (AI 연결 실패: {String(aiFailReason).slice(0, 120)})
-        </p>
-      )}
+      {status === 'working' && <p className="pill">사진 불러오는 중...</p>}
       {error && <p style={{ color: '#e64545', fontSize: 13 }}>{error}</p>}
     </div>
   )

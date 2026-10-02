@@ -122,8 +122,8 @@ export default function EncyclopediaPage() {
           </div>
           {mode === 'photo' ? (
             <>
-              <p style={{ fontSize: 12, opacity: 0.6 }}>사진을 올리면 도감 그림체로 자동으로 바뀌어요!</p>
-              <PhotoStylizePad ref={photoRef} name={name} />
+              <p style={{ fontSize: 12, opacity: 0.6 }}>사진을 찍거나 골라서 등록해보세요</p>
+              <PhotoStylizePad ref={photoRef} />
             </>
           ) : (
             <>
