@@ -123,7 +123,7 @@ export default function EncyclopediaPage() {
           {mode === 'photo' ? (
             <>
               <p style={{ fontSize: 12, opacity: 0.6 }}>사진을 올리면 도감 그림체로 자동으로 바뀌어요!</p>
-              <PhotoStylizePad ref={photoRef} />
+              <PhotoStylizePad ref={photoRef} name={name} />
             </>
           ) : (
             <>
@@ -171,7 +171,14 @@ function EncyclopediaCard({ entry, onDelete }) {
       <div style={{ flex: 1, minWidth: 0 }}>
         <div className="row" style={{ justifyContent: 'space-between' }}>
           <strong style={{ fontSize: 14 }}>No.{entry.entry_no} {entry.name}</strong>
-          <button className="btn btn-ghost" style={{ minHeight: 28, minWidth: 28, padding: 0, fontSize: 12 }} onClick={() => onDelete(entry.id)} aria-label="삭제">✕</button>
+          <button
+            className="btn btn-ghost"
+            style={{ minHeight: 28, minWidth: 28, padding: 0, fontSize: 12 }}
+            onClick={() => { if (window.confirm(`'${entry.name}' 항목을 삭제할까요?`)) onDelete(entry.id) }}
+            aria-label="삭제"
+          >
+            ✕
+          </button>
         </div>
         {entry.details && <p style={{ fontSize: 12, opacity: 0.7, whiteSpace: 'pre-wrap', marginTop: 4 }}>{entry.details}</p>}
       </div>
